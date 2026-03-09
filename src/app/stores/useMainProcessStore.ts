@@ -8,6 +8,8 @@ interface mainProcessStore {
     removeOptionArr: (id:string) => void;
     selectPersonnel: (id:string, type:string, title:string) => void;
     optionClean: (step:number) => void;
+    isLoading: boolean;
+    setIsLoading: (loading: boolean) => void;
 }
 
 const useMainProcessStore = create<mainProcessStore>((set, get) => ({
@@ -52,6 +54,12 @@ const useMainProcessStore = create<mainProcessStore>((set, get) => ({
     optionClean: (step: number) => {
         set({process: step});
         set({optionArr: []});
+    },
+    isLoading: false,
+    setIsLoading: (isLoading: boolean) => {
+        set((state: {isLoading: boolean}) => ({
+            isLoading: (state.isLoading = isLoading),
+        }));
     },
 }));
 
