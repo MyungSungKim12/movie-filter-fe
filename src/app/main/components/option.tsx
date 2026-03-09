@@ -34,18 +34,15 @@ import useMovieListStore from "../../stores/useMovieListStore";
 const Option = () => {
     const supabase = useSupabaseBrowser();
 
-    const {process, setProcess, optionArr, setOptionArr, removeOptionArr, selectPersonnel, optionClean} = useMainProcessStore();
+    const {process, setProcess, optionArr, setOptionArr, removeOptionArr, selectPersonnel, optionClean, isLoading, setIsLoading} = useMainProcessStore();
     const { setMovieLogId } = useMovieListStore();
-
-    const [isLoading, setIsLoading] = useState(false);
 
     const { data: optionAll } = useQuery(getOptionAllQuery(supabase), {staleTime: Infinity, gcTime: 1000 * 60 * 60});
 
     const [optionData, setOptionData] = useState<{option_title:string}[]>([]);
 
     const recommendMovieActive = () => {
-
-        if (isLoading) return; 
+        if(isLoading) return; 
         setIsLoading(true); 
 
         axios({
@@ -55,14 +52,19 @@ const Option = () => {
             headers: {'Content-type': 'application/json'}
         }).then((res):void => {
             console.log("서버 응답:", res.data);
-            setMovieLogId(res.data);
-            optionClean(4);
+            if(res.data !== null || res.data.length !== 0) {
+                setMovieLogId(res.data);
+                optionClean(4);
+                setIsLoading(false);
+            } else {
+                alert("서버를 확인해주세요.");
+            }
         }).catch((err):void => {
             alert("서버를 확인해주세요.");
             console.log(err.message);
             optionClean(0);
         }).finally(() => {
-            setIsLoading(false); // 성공하든 실패하든 로딩 해제
+            setIsLoading(false); 
         });
     }
 

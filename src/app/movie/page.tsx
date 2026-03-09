@@ -2,28 +2,24 @@
 
 import * as Style from "./page.style";
 
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faHeart as favorite1 } from "@fortawesome/free-regular-svg-icons";
-import { faHeart as favorite2 } from "@fortawesome/free-solid-svg-icons";
-
 import { useEffect, useState } from "react";
 import { useQuery } from "@supabase-cache-helpers/postgrest-react-query";
 import { getRecommendMovieListQuery } from "../queries/getMovieQuery";
 import useSupabaseBrowser from "../supabase/supabase-browser";
 
-import useMovieListStore from "../stores/useMovieListStore";
+import useMainProcessStore from "../stores/useMainProcessStore";
 
 import Modal from "./components/modal";
 import Wishlist from "./components/wishlist";
+import Loading from "../main/components/loading";
 
-const Movie = () => {
+const Movie = (props:{movieLogId:string}) => {
     const supabase = useSupabaseBrowser();
 
-    const { movieLogId } = useMovieListStore();
-
+    const {setIsLoading} = useMainProcessStore();
     const [userId, setUserId] = useState<string | null>(null);
 
-    const { data: movieList, isLoading: loading, isError: dataError, error: errorMsg } = useQuery(getRecommendMovieListQuery(supabase, "ml_8ae14c2f-75f2-4d98-afbc-7e2f1a1c0920", userId));
+    const { data: movieList, isLoading: loading, isError: dataError, error: errorMsg } = useQuery(getRecommendMovieListQuery(supabase, props.movieLogId, userId));
 
     const [modalData, setModalData] = useState<{
         is_wishlist: boolean
@@ -44,6 +40,7 @@ const Movie = () => {
     const [isMounted, setIsMounted] = useState(false);
 
     useEffect(() => {
+        setIsLoading(false); 
         setIsMounted(true);
         const id = localStorage.getItem('user_id');
         setUserId(id || null);
@@ -55,7 +52,7 @@ const Movie = () => {
                 
             </div>
             {
-                !isMounted ? <div>Loading...</div> :
+                !isMounted ? <Loading /> : loading ? <Loading /> :
                     <>
                         <div className="movie_body">
                             {modalData && (<Modal data={modalData} onClose={() => setModalData(null)} />)}
