@@ -1,23 +1,75 @@
 "use client";
 
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import styled from "styled-components";
+import axios from 'axios';
 import { 
   Camera, Heart, Youtube, MessageCircle, Star, X, Home, 
   Search, Film, User, PieChart, TrendingUp, Clock, Settings, LogOut, ChevronRight, ArrowLeft 
 } from 'lucide-react';
 
+const TMDB_API_KEY = process.env.NEXT_PUBLIC_TMDB_API_KEY;
+const TMDB_IMAGE_BASE = "https://image.tmdb.org/t/p/w500";
+
 const MyPage = () => {
   const [selectedMovie, setSelectedMovie] = useState<any>(null);
+  const [favoriteMovies, setFavoriteMovies] = useState<any[]>([]); 
+  const [loading, setLoading] = useState(true);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  const favoriteMovies = [
-    { id: 1, title: "인셉션", rating: 8.8, date: "2010", color: "#4facfe", overview: "타인의 꿈에 접속해 생각을 심는 거대한 작전..." },
-    { id: 2, title: "라라랜드", rating: 8.5, date: "2016", color: "#f093fb", overview: "꿈을 꾸는 사람들을 위한 별들의 도시 라라랜드..." },
-    { id: 3, title: "엘리멘탈", rating: 7.7, date: "2023", color: "#43e97b", overview: "불, 물, 공기, 흙 4원소가 살고 있는 엘리멘트 시티..." },
-    { id: 4, title: "어바웃 타임", rating: 9.1, date: "2013", color: "#fa709a", overview: "시간을 되돌릴 수 있는 능력을 가진 가문의 이야기..." },
-    { id: 5, title: "기생충", rating: 8.6, date: "2019", color: "#667eea", overview: "전원백수로 살 길 막막한 기택 가족의 이야기..." },
-  ];
+  useEffect(() => {
+    const fetchFavorites = async () => {
+      try {
+        setLoading(true);
+        const userId = localStorage.getItem('user_id') || '1';
+        const response = await axios.get(`http://localhost:8080/api/user/wishlist/${userId}`);
+        const rawData = Array.isArray(response.data) ? response.data : [];
+        
+        const mappedData = await Promise.all(rawData.map(async (wish: any) => {
+          const tmdbId = wish.miId.replace('mi_', '');
+          try {
+            const tmdbRes = await axios.get(
+              `https://api.themoviedb.org/3/movie/${tmdbId}?api_key=${TMDB_API_KEY}&language=ko-KR`
+            );
+            const movieInfo = tmdbRes.data;
+
+            return {
+              id: wish.wlId,
+              movieId: wish.miId,
+              title: movieInfo.title,
+              rating: movieInfo.vote_average.toFixed(1),
+              date: movieInfo.release_date?.split('-')[0] || '미정',
+              posterUrl: movieInfo.poster_path 
+                ? `${TMDB_IMAGE_BASE}${movieInfo.poster_path}` 
+                : null,
+              overview: movieInfo.overview || "상세 정보가 없습니다.",
+              color: "#1a1a1a"
+            };
+          } catch (e) {
+            return {
+              id: wish.wlId,
+              movieId: wish.miId,
+              title: `영화 ${tmdbId}`,
+              rating: "0.0",
+              date: "미정",
+              posterUrl: null,
+              overview: "데이터를 불러올 수 없습니다.",
+              color: "#333"
+            };
+          }
+        }));
+
+        setFavoriteMovies(mappedData);
+      } catch (error) {
+        console.error("데이터 로딩 실패:", error);
+        setFavoriteMovies([]);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchFavorites();
+  }, []);
 
   return (
     <MainLayout>
@@ -54,18 +106,32 @@ const MyPage = () => {
             <DashboardGrid>
               <MainSection>
                 <SectionHeader>
-                  <SectionTitle><Heart size={20} fill="#ff4d4d" color="#ff4d4d" /> 찜한 영화 (5)</SectionTitle>
+                  <SectionTitle>
+                    <Heart size={20} fill="#ff4d4d" color="#ff4d4d" /> 
+                    찜한 영화 ({favoriteMovies.length})
+                  </SectionTitle>
                 </SectionHeader>
+                
                 <MovieCardContainer>
-                  {favoriteMovies.map(movie => (
-                    <ColorMovieCard key={movie.id} $bgColor={movie.color} onClick={() => setSelectedMovie(movie)}>
-                      <CardIcon><Film size={32} opacity={0.3} /></CardIcon>
-                      <CardInfo>
-                        <CardTitle>{movie.title}</CardTitle>
-                        <CardMeta>{movie.date} · ⭐{movie.rating}</CardMeta>
-                      </CardInfo>
-                    </ColorMovieCard>
-                  ))}
+                  {loading ? (
+                    <LoadingText>데이터를 불러오는 중...</LoadingText>
+                  ) : favoriteMovies.length > 0 ? (
+                    favoriteMovies.map((movie) => (
+                      <ColorMovieCard 
+                        key={movie.id} 
+                        $posterUrl={movie.posterUrl}
+                        onClick={() => setSelectedMovie(movie)}
+                      >
+                        {!movie.posterUrl && <CardIcon><Film size={32} opacity={0.3} /></CardIcon>}
+                        <CardInfo>
+                          <CardTitle>{movie.title}</CardTitle>
+                          <CardMeta>{movie.date} · ⭐{movie.rating}</CardMeta>
+                        </CardInfo>
+                      </ColorMovieCard>
+                    ))
+                  ) : (
+                    <EmptyText>찜한 영화가 없습니다. 마음에 드는 영화를 찾아보세요!</EmptyText>
+                  )}
                 </MovieCardContainer>
               </MainSection>
 
@@ -86,7 +152,7 @@ const MyPage = () => {
                       <HistoryThumb />
                       <HistoryInfo>
                         <p className="title">최근 본 영화 제목 {i}</p>
-                        <p className="time">2시간 전 시청함</p>
+                        <p className="time">{i}시간 전 시청함</p>
                       </HistoryInfo>
                     </HistoryItem>
                   ))}
@@ -111,9 +177,8 @@ const MyPage = () => {
   );
 };
 
-// --- 상세 페이지 컴포넌트 ---
 const DetailView = ({ selectedMovie, onClose }: any) => {
-  const [viewMore, setViewMore] = useState<string | null>(null); // 'youtube' | 'naver' | null
+  const [viewMore, setViewMore] = useState<string | null>(null);
 
   return (
     <DetailWrapper>
@@ -126,17 +191,24 @@ const DetailView = ({ selectedMovie, onClose }: any) => {
 
       <DetailFlex>
         {!viewMore && (
-          <DetailMain>
-            <BigPosterCard $bgColor={selectedMovie.color}>
-              <Film size={80} opacity={0.2} />
+          <DetailContent>
+            <BigPosterCard $posterUrl={selectedMovie.posterUrl}>
+              {!selectedMovie.posterUrl && <Film size={80} opacity={0.2} />}
             </BigPosterCard>
+            
             <DetailTextContent>
               <DetailTitle>{selectedMovie.title}</DetailTitle>
-              <DetailRating><Star size={20} fill="gold" color="gold" /> {selectedMovie.rating}</DetailRating>
-              <DetailOverviewTitle>줄거리</DetailOverviewTitle>
-              <DetailOverviewText>{selectedMovie.overview}</DetailOverviewText>
+              <DetailMetaInfo>
+                <DetailRating><Star size={18} fill="gold" color="gold" /> {selectedMovie.rating}</DetailRating>
+                <DetailDate>{selectedMovie.date}년 개봉</DetailDate>
+              </DetailMetaInfo>
+              
+              <DetailOverviewSection>
+                <DetailOverviewTitle>줄거리</DetailOverviewTitle>
+                <DetailOverviewText>{selectedMovie.overview}</DetailOverviewText>
+              </DetailOverviewSection>
             </DetailTextContent>
-          </DetailMain>
+          </DetailContent>
         )}
 
         <DetailSidebar $fullWidth={!!viewMore}>
@@ -186,7 +258,7 @@ const DetailView = ({ selectedMovie, onClose }: any) => {
   );
 };
 
-// --- Styled Components
+/* --- Styled Components --- */
 
 const MainLayout = styled.div` display: flex; min-height: 100vh; background-color: #0d0d0d; color: #fff; `;
 const SidebarNav = styled.nav` width: 240px; background-color: #1a1a1a; padding: 30px 20px; display: flex; flex-direction: column; position: fixed; height: 100vh; `;
@@ -197,11 +269,27 @@ const NavItem = styled.div<{ $active?: boolean }>` display: flex; align-items: c
 const ContentArea = styled.main` flex: 1; margin-left: 240px; padding: 40px 50px; `;
 const ProfileCircle = styled.div` width: 80px; height: 80px; border-radius: 50%; background: linear-gradient(135deg, #6366f1, #a855f7); display: flex; align-items: center; justify-content: center; font-size: 32px; font-weight: bold; `;
 const DashboardGrid = styled.div` display: grid; grid-template-columns: 2fr 1fr; gap: 25px; `;
-const MovieCardContainer = styled.div` display: grid; grid-template-columns: repeat(5, 1fr); gap: 15px; `;
-const ColorMovieCard = styled.div<{ $bgColor: string }>` aspect-ratio: 2/3; background: ${props => props.$bgColor}; border-radius: 15px; position: relative; cursor: pointer; transition: 0.3s; overflow: hidden; &:hover { transform: translateY(-8px); filter: brightness(1.1); } `;
+const MovieCardContainer = styled.div` display: grid; grid-template-columns: repeat(5, 1fr); gap: 15px; min-height: 200px; `;
+
+const ColorMovieCard = styled.div<{ $posterUrl?: string | null }>`
+  aspect-ratio: 2/3;
+  background-color: #222;
+  background-image: ${props => props.$posterUrl ? `url("${props.$posterUrl}")` : 'none'};
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  border-radius: 15px;
+  position: relative;
+  cursor: pointer;
+  transition: 0.3s;
+  overflow: hidden;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+  &:hover { transform: translateY(-8px); filter: brightness(1.1); }
+`;
+
 const CardIcon = styled.div` position: absolute; top: 20px; left: 20px; `;
-const CardInfo = styled.div` position: absolute; bottom: 0; left: 0; right: 0; padding: 15px; background: linear-gradient(transparent, rgba(0,0,0,0.8)); `;
-const CardTitle = styled.div` font-weight: bold; font-size: 14px; margin-bottom: 4px; `;
+const CardInfo = styled.div` position: absolute; bottom: 0; left: 0; right: 0; padding: 15px; background: linear-gradient(transparent, rgba(0,0,0,0.9)); `;
+const CardTitle = styled.div` font-weight: bold; font-size: 14px; margin-bottom: 4px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; `;
 const CardMeta = styled.div` font-size: 11px; opacity: 0.8; `;
 const BottomSection = styled.div` background: #1a1a1a; padding: 25px; border-radius: 20px; margin-top: 5px; `;
 const RecentHistoryList = styled.div` margin-top: 15px; `;
@@ -222,41 +310,89 @@ const StatsSection = styled.div` background: #1a1a1a; padding: 25px; border-radi
 const PreferenceCard = styled.div` background: #252525; padding: 20px; border-radius: 15px; margin-top: 15px; `;
 const GenreTag = styled.span` background: #6366f133; color: #6366f1; padding: 5px 12px; border-radius: 20px; font-size: 12px; margin-right: 5px; `;
 const TimeText = styled.div` font-size: 20px; font-weight: bold; margin-top: 10px; `;
-
-const DetailWrapper = styled.div` animation: fadeIn 0.4s ease-out; `;
+const DetailWrapper = styled.div` animation: fadeIn 0.4s ease-out; @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } } `;
 const CloseButton = styled.button` background: none; border: none; color: #888; cursor: pointer; display: flex; align-items: center; gap: 8px; font-size: 16px; &:hover { color: #fff; } `;
 const DetailFlex = styled.div` display: flex; gap: 40px; `;
-const DetailMain = styled.div` flex: 1.5; display: flex; gap: 30px; animation: fadeIn 0.3s; `;
-const BigPosterCard = styled.div<{ $bgColor: string }>` min-width: 300px; height: 450px; background: ${props => props.$bgColor}; border-radius: 20px; display: flex; align-items: center; justify-content: center; box-shadow: 0 20px 40px rgba(0,0,0,0.5); `;
-const DetailTextContent = styled.div` flex: 1; `;
-const DetailTitle = styled.h2` font-size: 40px; margin-bottom: 10px; `;
-const DetailRating = styled.div` background: #1a1a1a; padding: 10px 20px; border-radius: 12px; width: fit-content; display: flex; align-items: center; gap: 8px; font-size: 20px; font-weight: bold; margin-bottom: 20px; `;
-const DetailOverviewTitle = styled.h4` color: #6366f1; margin-bottom: 10px; font-size: 18px; `;
-const DetailOverviewText = styled.p` line-height: 1.8; color: #ccc; font-size: 16px; `;
 
-const DetailSidebar = styled.div<{ $fullWidth: boolean }>` 
-  flex: ${props => props.$fullWidth ? '1' : '0.8'};
-  transition: all 0.3s ease;
+const DetailContent = styled.div`
+  flex: 1.5;
+  display: flex;
+  flex-direction: column;
+  gap: 25px;
 `;
 
+const BigPosterCard = styled.div<{ $posterUrl?: string | null }>` 
+  width: 100%; 
+  height: 600px;
+  background-color: #000; 
+  
+  /* 핵심 수정 사항: cover -> contain */
+  background-image: ${props => props.$posterUrl ? `url("${props.$posterUrl}")` : 'none'};
+  background-size: contain; 
+  background-position: center;
+  background-repeat: no-repeat;
+  
+  border-radius: 20px; 
+  display: flex; 
+  align-items: center; 
+  justify-content: center; 
+  
+  box-shadow: 0 10px 30px rgba(0,0,0,0.8); 
+`;
+
+const DetailTextContent = styled.div` width: 100%; `;
+const DetailTitle = styled.h2` font-size: 36px; margin-bottom: 10px; font-weight: 800; `;
+
+const DetailMetaInfo = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  margin-bottom: 25px;
+  color: #aaa;
+  font-size: 16px;
+`;
+
+const DetailRating = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-weight: bold;
+  color: #fff;
+`;
+
+const DetailDate = styled.span``;
+
+const DetailOverviewSection = styled.section`
+  background: #1a1a1a;
+  padding: 30px;
+  border-radius: 20px;
+  border: 1px solid #252525;
+`;
+
+const DetailOverviewTitle = styled.h4`
+  color: #6366f1;
+  margin-bottom: 12px;
+  font-size: 18px;
+  font-weight: 700;
+`;
+
+const DetailOverviewText = styled.p`
+  line-height: 1.8;
+  color: #ddd;
+  font-size: 16px;
+  margin: 0;
+`;
+
+const DetailSidebar = styled.div<{ $fullWidth: boolean }>` flex: ${props => props.$fullWidth ? '1' : '0.8'}; transition: all 0.3s ease; `;
 const SidebarInner = styled.div` background: #1a1a1a; padding: 25px; border-radius: 20px; `;
 const SidebarHeader = styled.div` display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; `;
 const SidebarTitle = styled.h4` display: flex; align-items: center; gap: 8px; font-size: 16px; margin: 0; `;
 const MoreBtn = styled.button` background: none; border: none; color: #6366f1; font-size: 13px; cursor: pointer; display: flex; align-items: center; gap: 2px; &:hover { text-decoration: underline; } `;
-
-const VideoGrid = styled.div<{ $expanded: boolean }>`
-  display: grid;
-  grid-template-columns: ${props => props.$expanded ? 'repeat(2, 1fr)' : '1fr'};
-  gap: 15px;
-`;
-
-const ReviewGrid = styled.div<{ $expanded: boolean }>`
-  display: grid;
-  grid-template-columns: ${props => props.$expanded ? 'repeat(2, 1fr)' : '1fr'};
-  gap: 10px;
-`;
-
+const VideoGrid = styled.div<{ $expanded: boolean }>` display: grid; grid-template-columns: ${props => props.$expanded ? 'repeat(2, 1fr)' : '1fr'}; gap: 15px; `;
+const ReviewGrid = styled.div<{ $expanded: boolean }>` display: grid; grid-template-columns: ${props => props.$expanded ? 'repeat(2, 1fr)' : '1fr'}; gap: 10px; `;
 const SidebarPlaceholder = styled.div` height: 150px; background: #252525; border-radius: 12px; display: flex; align-items: center; justify-content: center; color: #555; font-size: 14px; border: 1px dashed #333; `;
 const DetailReviewBox = styled.div` background: #252525; padding: 15px; border-radius: 12px; font-size: 14px; border-left: 4px solid #03C75A; `;
+const LoadingText = styled.div` grid-column: span 5; text-align: center; padding: 60px 0; color: #777; font-size: 14px; `;
+const EmptyText = styled.div` grid-column: span 5; text-align: center; padding: 60px 0; color: #555; font-size: 14px; border: 1px dashed #333; border-radius: 15px; `;
 
 export default MyPage;
