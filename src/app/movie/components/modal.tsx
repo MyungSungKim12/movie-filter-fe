@@ -70,64 +70,66 @@ const Modal = (props : ModalProps) => {
 
     return (
         <Style.ModalOverlay $isClosing={isClose} onClick={handleClose}>
-            <Style.ModalContent $isClosing={isClose} $image={props.data.mp_backdrop} onClick={(e) => e.stopPropagation()}>
-                <button className="modal_close" onClick={() => handleClose()}><CloseIcon /></button>
-                <div className="modal_head" />
-                <div className="modal_body">
-                    <div className="modal_content_bottom"></div>
-                    <div className="modal_content_top">
-                        <div className="modal_content_left">
-                            <div className="movie_title">
-                                {props.data.mi_title}<Wishlist is_wishlist={props.data.is_wishlist} mi_id={props.data.mi_id} type={"M"} />
+            <Style.ModalContainer>
+                <Style.ModalContent $isClosing={isClose} $image={props.data.mp_backdrop} onClick={(e) => e.stopPropagation()}>
+                    <button className="modal_close" onClick={() => handleClose()}><CloseIcon /></button>
+                    <div className="modal_head" />
+                    <div className="modal_body">
+                        <div className="modal_content_bottom"></div>
+                        <div className="modal_content_top">
+                            <div className="modal_content_left">
+                                <div className="movie_title">
+                                    {props.data.mi_title}<Wishlist is_wishlist={props.data.is_wishlist} mi_id={props.data.mi_id} type={"M"} />
+                                </div>
+                                <div className="movie_genres">
+                                    {props.data.mi_genre.split(',').map((genre, idx) => {
+                                        return (
+                                            <div className="movie_genre" key={"genre_" + idx}>{genre}</div>
+                                        )
+                                    })} 
+                                </div>
+                                <div className="movie_summary">
+                                    {props.data.mi_summary}
+                                </div>
+                                <div className="movie_shortcut">
+                                    {props.data.mi_provider.split(',').filter((p) => p !== 'NONE').map((platform, idx) => {
+                                        return (
+                                            <Style.PlatformBadge $image={platform} key={"ott_" + idx} />
+                                        )
+                                    })} 
+                                </div>
                             </div>
-                            <div className="movie_genres">
-                                {props.data.mi_genre.split(',').map((genre, idx) => {
+                            <div className="modal_content_right">
+                                {scoreList.filter(rate => rate.score !== 0).map((rate, idx) => {
+                                    const score = rate.name === 'IMDB' || rate.name === 'TMDB' ? rate.score * 10 : rate.score;
                                     return (
-                                        <div className="movie_genre" key={"genre_" + idx}>{genre}</div>
+                                        <Style.RatingBadge $score={score} key={"ott_" + idx}>
+                                            <div className="rating_score">
+                                                <img src={defaultImageUrl + "/platform/" + rate.name + ".svg"} alt="rating_platform" />
+                                                <div className="score_detail">
+                                                    <div className="score_view">
+                                                        {rate.name === 'IMDB' || rate.name === 'TMDB' ? score / 10 : score}{rate.name === 'TOMATO' ? '%' : ''}
+                                                    </div>
+                                                    <div className="score_title">
+                                                        {rate.name === 'TOMATO' ? 'Tomatometer' : rate.name === 'METACRITIC' ? 'Metascore' : rate.name}
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div className="rating_graph">
+                                                <div className="graph_container">
+                                                    <div className="graph_bar">
+                                                        <div className="graph_glow" />
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </Style.RatingBadge>
                                     )
                                 })} 
                             </div>
-                            <div className="movie_summary">
-                                {props.data.mi_summary}
-                            </div>
-                            <div className="movie_shortcut">
-                                {props.data.mi_provider.split(',').filter((p) => p !== 'NONE').map((platform, idx) => {
-                                    return (
-                                        <Style.PlatformBadge $image={platform} key={"ott_" + idx} />
-                                    )
-                                })} 
-                            </div>
-                        </div>
-                        <div className="modal_content_right">
-                            {scoreList.filter(rate => rate.score !== 0).map((rate, idx) => {
-                                const score = rate.name === 'IMDB' || rate.name === 'TMDB' ? rate.score * 10 : rate.score;
-                                return (
-                                    <Style.RatingBadge $score={score} key={"ott_" + idx}>
-                                        <div className="rating_score">
-                                            <img src={defaultImageUrl + "/platform/" + rate.name + ".svg"} alt="rating_platform" />
-                                            <div className="score_detail">
-                                                <div className="score_view">
-                                                    {rate.name === 'IMDB' || rate.name === 'TMDB' ? score / 10 : score}{rate.name === 'TOMATO' ? '%' : ''}
-                                                </div>
-                                                <div className="score_title">
-                                                    {rate.name === 'TOMATO' ? 'Tomatometer' : rate.name === 'METACRITIC' ? 'Metascore' : rate.name}
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div className="rating_graph">
-                                            <div className="graph_container">
-                                                <div className="graph_bar">
-                                                    <div className="graph_glow" />
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </Style.RatingBadge>
-                                )
-                            })} 
                         </div>
                     </div>
-                </div>
-            </Style.ModalContent>
+                </Style.ModalContent>
+            </Style.ModalContainer>
         </Style.ModalOverlay>
     )
 }

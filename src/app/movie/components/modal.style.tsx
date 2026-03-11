@@ -30,21 +30,32 @@ export const ModalOverlay = styled.div<{ $isClosing: boolean }>`
     animation: ${({ $isClosing }) => ($isClosing ? fadeOut : fadeIn)} 0.3s ease-in-out forwards;
 `;
 
-export const ModalContent = styled.div<{ $isClosing: boolean; $image: string}>`
+export const ModalContainer = styled.div`
     position: relative;
+    display: flex;
+    align-items: center;
     width: 90%;
     max-width: 1024px;
     height: 90%;
     border: 1px solid rgba(128, 128, 128, 0.4);
     border-radius: 20px;
-    background: #1e1e22;
+    overflow: hidden;
+    background-color: #000000;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+`
+
+export const ModalContent = styled.div<{ $isClosing: boolean; $image: string}>`
+    position: relative;
+    width: 100%;
+    height: 100%;
+    margin: auto;
+    border-radius: 20px;
     font-size: 2rem;
     color: #FFFFFF;
     overflow-y: auto;
+    &::-webkit-scrollbar { width: 4px; }
+    &::-webkit-scrollbar-thumb { background: #333; border-radius: 8px; }
     animation: ${({ $isClosing }) => ($isClosing ? scaleDown : scaleUp)} 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
-    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
-    &::-webkit-scrollbar { width: 8px; }
-    &::-webkit-scrollbar-thumb { background: #444; border-radius: 4px; }
     z-index: 1000;
 
     .modal_close {
@@ -162,7 +173,6 @@ export const ModalContent = styled.div<{ $isClosing: boolean; $image: string}>`
                 gap: 20px 10px;
                 width: calc(100% * 1 / 3);
                 height: 100%;
-                padding-bottom: 20px;
                 margin-left: 30px;
             }
         }
