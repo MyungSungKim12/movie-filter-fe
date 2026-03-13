@@ -37,14 +37,15 @@ export const ModalContainer = styled.div`
     width: 90%;
     max-width: 1024px;
     height: 90%;
+    max-height: 640px;
     border: 1px solid rgba(128, 128, 128, 0.4);
     border-radius: 20px;
     overflow: hidden;
-    background-color: #000000;
+    background-color: rgb(13, 13, 18);
     box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
 `
 
-export const ModalContent = styled.div<{ $isClosing: boolean; $image: string}>`
+export const ModalContent = styled.div<{ $isClosing:boolean; $poster:string;$backdrop:string}>`
     position: relative;
     width: 100%;
     height: 100%;
@@ -77,13 +78,21 @@ export const ModalContent = styled.div<{ $isClosing: boolean; $image: string}>`
     }
 
     .modal_head {
+        @media (max-width: 768px) {
+            background-size: cover;
+            background-position: center; 
+        }
+        // mobile_view
+        @media (max-width: 480px) {
+            background-image: linear-gradient(75deg, rgba(13, 13, 18, 1) 10%, rgba(13, 13, 18, 0.6) 20%, rgba(13, 13, 18, 0) 40%), ${({$poster}) => "url('" + movieImageUrl + "/w500" + $poster + "')"};
+        }
         position: absolute;
         top: 0;
         left: 0;
         width: 100%;
         height: 70%;
         background-color: rgb(13, 13, 18);
-        background-image: linear-gradient(75deg, rgba(13, 13, 18, 1) 10%, rgba(13, 13, 18, 0.6) 20%, rgba(13, 13, 18, 0) 40%), ${({$image}) => "url('" + movieImageUrl + "/original" + $image + "')"};
+        background-image: linear-gradient(75deg, rgba(13, 13, 18, 1) 10%, rgba(13, 13, 18, 0.6) 20%, rgba(13, 13, 18, 0) 40%), ${({$backdrop}) => "url('" + movieImageUrl + "/original" + $backdrop + "')"};
         background-repeat: no-repeat;
         background-position: right top; 
         background-size: 95%;
@@ -115,20 +124,37 @@ export const ModalContent = styled.div<{ $isClosing: boolean; $image: string}>`
         }
 
         .modal_content_top {
+            @media (max-width: 1024px) {
+                padding: 5px 0 5px 35px;
+            }
+            // mobile_view
+            @media (max-width: 480px) {
+                justify-content: center;
+                padding: 5px;
+            }
             display: flex;
             width: 100%;
             height: 50%;
-            padding: 5px 50px;
+            padding: 5px 0 5px 50px;
 
             .modal_content_left {
+                // mobile_view
+                @media (max-width: 480px) {
+                    width: 90%;
+                }
                 position: relative;
                 display: flex;
                 flex-direction: column;
                 gap: 15px;
-                width: calc(100% * 2 / 3);
+                width: calc(85% * 2 / 3);
                 height: 100%;
 
                 .movie_title {
+                    // mobile_view
+                    @media (max-width: 480px) {
+                        margin-top: 60px;
+                        font-size: 3rem;
+                    }
                     display: flex;
                     align-items: center;
                     gap: 20px;
@@ -137,12 +163,23 @@ export const ModalContent = styled.div<{ $isClosing: boolean; $image: string}>`
                 }
 
                 .movie_genres {
+                    // mobile_view
+                    @media (max-width: 480px) {
+                        gap: 3px;
+                    }
                     display: flex;
                     flex-wrap: wrap;
                     align-items: center;
                     gap: 10px;
 
                     .movie_genre {
+                        @media (max-width: 768px) {
+                            font-size: 1.3rem;
+                        }
+                        // mobile_view
+                        @media (max-width: 480px) {
+                            font-size: .9rem;
+                        }
                         padding: 2px 8px;
                         border: 1px solid rgba(255, 255, 255, 0.1);
                         border-radius: 7px;
@@ -155,17 +192,46 @@ export const ModalContent = styled.div<{ $isClosing: boolean; $image: string}>`
                 }
 
                 .movie_summary {
+                    @media (max-width: 768px) {
+                        font-size: 1.4rem;
+                    }
+                    // mobile_view
+                    @media (max-width: 480px) {
+                        margin: 0;
+                        font-size: 1rem;
+                    }
                     margin-top: 15px;
                     font-size: 1.5rem;
                 }
 
                 .movie_shortcut {
+                    // mobile_view
+                    @media (max-width: 480px) {
+                    }
                     margin-top: auto;
                     padding-bottom: 20px;
                 }
             }
 
             .modal_content_right {
+                @media (max-width: 768px) {
+                    flex-direction: column;
+                    flex-wrap: nowrap;
+                    align-items: center;
+                    gap: 5px;
+                }
+                // mobile_view
+                @media (max-width: 480px) {
+                    position: absolute;
+                    top: 30px;
+                    left: 20px;
+                    flex-direction: row;
+                    justify-content: left;
+                    gap: 2px;
+                    width: 250px;
+                    margin: 0;
+                }
+                position: relative;
                 display: flex;
                 flex-wrap: wrap;
                 justify-content: center;
@@ -181,7 +247,9 @@ export const ModalContent = styled.div<{ $isClosing: boolean; $image: string}>`
 
 export const PlatformBadge = styled('div')<{$image:string}>`
     // mobile_view
-    @media (max-width: 500px) {
+    @media (max-width: 480px) {
+        width: 70px;
+        height: 30px;
     }
     position: relative;
     display: inline-block;
@@ -246,14 +314,27 @@ const growUp = ($score: number) => keyframes`
 `;
 
 export const RatingBadge = styled('div')<{$score:number}>`
+    @media (max-width: 1024px) {
+    }
+    @media (max-width: 768px) {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 5px;
+        width: 95%;
+        height: 60px;
+        padding: 10px;
+    }
     // mobile_view
-    @media (max-width: 500px) {
+    @media (max-width: 480px) {
+        width: 60px;
+        padding: 5px 10px;
     }
     position: relative;
     display: inline-block;
     width: calc(95% / 2);
-    height: 120px;
-    padding: 25px 10px;
+    height: 100px;
+    padding: 15px 10px;
     border-radius: 10px;
     background: #1a1a1a;
     color: #FFFFFF;
@@ -274,11 +355,28 @@ export const RatingBadge = styled('div')<{$score:number}>`
     }
 
     .rating_score {
+        @media (max-width: 768px) {
+            flex-direction: column;
+            margin-right: 5px;
+        }
         display: flex;
         align-items: center;
         justify-content: space-around;
 
         img {
+            @media (max-width: 1024px) {
+                width: 35px;
+                height: 35px;
+            }
+            @media (max-width: 768px) {
+                width: 25px;
+                height: 25px;
+            }
+            // mobile_view
+            @media (max-width: 480px) {
+                width: 20px;
+                height: 20px;
+            }
             width: 40px;
             height: 40px;
             border-radius: 10px;
@@ -293,6 +391,18 @@ export const RatingBadge = styled('div')<{$score:number}>`
             align-items: center;
 
             .score_view {
+                @media (max-width: 1024px) {
+                    font-size: 1.6rem;
+                }
+                @media (max-width: 768px) {
+                    padding: 0;
+                    margin-top: 2px;
+                    font-size: 1.2rem;
+                }
+                // mobile_view
+                @media (max-width: 480px) {
+                    font-size: 1rem;
+                }
                 padding-bottom: 3px;
                 font-size: 2rem;
                 font-weight: 800;
@@ -300,6 +410,17 @@ export const RatingBadge = styled('div')<{$score:number}>`
             }
 
             .score_title {
+                @media (max-width: 1024px) {
+                    font-size: .9rem;
+                }
+                @media (max-width: 768px) {
+                    display: none;
+                }
+                // mobile_view
+                @media (max-width: 480px) {
+                    display: block;
+                    font-size: .7rem;
+                }
                 font-size: 1rem;
                 font-weight: 300;
                 font-style: italic;
@@ -308,6 +429,14 @@ export const RatingBadge = styled('div')<{$score:number}>`
     }
 
     .rating_graph {
+        @media (max-width: 768px) {
+            height: 18px;
+            margin: 0;
+        }
+        // mobile_view
+        @media (max-width: 480px) {
+            display: none;
+        }
         clear: both;
         width: 100%;
         height: 12px;
@@ -334,6 +463,10 @@ export const RatingBadge = styled('div')<{$score:number}>`
                 animation: ${({$score}) => growUp($score)} 1.5s cubic-bezier(0.22, 1, 0.36, 1) forwards;
 
                 .graph_glow {
+                    @media (max-width: 768px) {
+                        width: 18px;
+                        height: 18px;
+                    }
                     position: absolute;
                     right: -5px;
                     top: 50%;
