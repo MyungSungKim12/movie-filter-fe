@@ -94,7 +94,7 @@ const Modal = (props : ModalProps) => {
                                 <div className="movie_shortcut">
                                     {props.data.mi_provider.split(',').filter((p) => p !== 'NONE').map((platform, idx) => {
                                         return (
-                                            <Style.PlatformBadge $image={platform} key={"ott_" + idx} />
+                                            <Style.PlatformBadge $image={platform.trim()} key={"ott_" + idx} />
                                         )
                                     })} 
                                 </div>

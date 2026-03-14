@@ -70,7 +70,7 @@ const Movie = (props:{movieLogId:string}) => {
                                                     <div className="card_ott">
                                                         {item.mi_provider.split(',').filter((p) => p !== 'NONE').map((platform, idx2) => {
                                                             return (
-                                                                <Style.PlatformBadge $image={platform} key={platform + idx2} />
+                                                                <Style.PlatformBadge $image={platform.trim()} key={platform + idx2} />
                                                             )
                                                         })}
                                                     </div>

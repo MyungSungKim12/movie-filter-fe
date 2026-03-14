@@ -47,8 +47,8 @@ const Option = () => {
 
         axios({
             method: "POST",
-            url: "/local/api/recommend/search",
-            data: optionArr,
+            url: "/local/api/movie/recommend",
+            data: {userId: localStorage.getItem('user_id'), option: optionArr},
             headers: {'Content-type': 'application/json'}
         }).then((res):void => {
             console.log("서버 응답:", res.data);
