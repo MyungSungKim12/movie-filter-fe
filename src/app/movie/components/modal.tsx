@@ -42,6 +42,26 @@ const Modal = (props : ModalProps) => {
         }, 200)
     }
 
+    const onClickOttRedirect = (ottName:string) => {
+        let url:string = '';
+        if(ottName === 'NETFLIX') {
+            url = 'https://www.netflix.com/kr/';
+        } else if(ottName === 'WATCHA') {
+            url = 'https://watcha.com/';
+        } else if(ottName === 'AMAZON') {
+            url = 'https://www.primevideo.com/';
+        } else if(ottName === 'DISNEY') {
+            url = 'https://www.disneyplus.com/';
+        } else if(ottName === 'WAVVE') {
+            url = 'https://www.wavve.com/';
+        } else if(ottName === 'TVING') {
+            url = 'https://www.tving.com/';
+        } else if(ottName === 'COUPANG') {
+            url = 'https://www.coupang.com/';
+        } 
+        window.open(url, '_blank');
+    }
+
     useEffect(() => {
         const setScore = [
             { name: 'TMDB', score: Number(props.data.ms_tmdb_score.toFixed(1)) },
@@ -71,7 +91,7 @@ const Modal = (props : ModalProps) => {
     return (
         <Style.ModalOverlay $isClosing={isClose} onClick={handleClose}>
             <Style.ModalContainer>
-                <Style.ModalContent $isClosing={isClose} $image={props.data.mp_backdrop} onClick={(e) => e.stopPropagation()}>
+                <Style.ModalContent $isClosing={isClose} $poster={props.data.mp_poster} $backdrop={props.data.mp_backdrop} onClick={(e) => e.stopPropagation()}>
                     <button className="modal_close" onClick={() => handleClose()}><CloseIcon /></button>
                     <div className="modal_head" />
                     <div className="modal_body">
@@ -93,8 +113,9 @@ const Modal = (props : ModalProps) => {
                                 </div>
                                 <div className="movie_shortcut">
                                     {props.data.mi_provider.split(',').filter((p) => p !== 'NONE').map((platform, idx) => {
+                                        const ottName:string = platform.trim();
                                         return (
-                                            <Style.PlatformBadge $image={platform} key={"ott_" + idx} />
+                                            <Style.PlatformBadge $image={ottName} key={"ott_" + idx} onClick={() => onClickOttRedirect(ottName)} />
                                         )
                                     })} 
                                 </div>

@@ -260,7 +260,7 @@ export const PlatformBadge = styled('div')<{$image:string}>`
     border-radius: 10px;
     background-image: ${({$image}) => "url('" + defaultImageUrl + "/shortcut/" + $image + ".svg')"  };
     background-repeat: no-repeat;
-    background-size: ${({$image}) => $image === 'COUPANG' ? 90 : $image === 'WAVVE' ? 80 : 70}%;
+    background-size: ${({$image}) => $image === 'COUPANG' ? 90 : $image === 'WAVVE' ? 80 : $image === 'AMAZON' ? 50 : 70}%;
     background-position: center;
     background-color: #FFFFFF;
     transition: all 0.5s ease-out;

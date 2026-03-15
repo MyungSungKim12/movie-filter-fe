@@ -17,8 +17,9 @@ const fadeInUp = keyframes`
 export const Movie = styled('div')`
     position: relative;
     display: flex;
+    justify-content: center;
     width: 100%;
-    height: fit-content;
+    height: 100%;
     padding: 80px 25px;
 
     .movie_header {

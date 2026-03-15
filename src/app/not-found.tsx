@@ -3,6 +3,9 @@
 import styled, { keyframes, css } from "styled-components";
 
 import { useRouter } from 'next/navigation'
+import { useEffect } from "react";
+
+import useMainProcessStore from "./stores/useMainProcessStore";
 
 const glitch_swipe = keyframes` 
     0%,
@@ -38,7 +41,9 @@ const NotFoundStyle = styled('div')`
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    height: 100vh;
+    width: 100%;
+    height: 100%;
+    min-height: 100vh;
     background: radial-gradient(circle, #1a1a1a, #000);
     font-family: Arial, sans-serif;
     color: #FFFFFF;
@@ -134,6 +139,12 @@ const NotFoundStyle = styled('div')`
 
 const NotFound = () => {
     const router = useRouter()
+
+    const {setProcess} = useMainProcessStore();
+
+    useEffect(() => {
+        setProcess(0);
+    }, []);
 
     return (
         <NotFoundStyle>

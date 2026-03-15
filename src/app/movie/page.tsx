@@ -2,6 +2,7 @@
 
 import * as Style from "./page.style";
 
+import { notFound } from 'next/navigation';
 import { useEffect, useState } from "react";
 import { useQuery } from "@supabase-cache-helpers/postgrest-react-query";
 import { getRecommendMovieListQuery } from "../queries/getMovieQuery";
@@ -12,8 +13,13 @@ import useMainProcessStore from "../stores/useMainProcessStore";
 import Modal from "./components/modal";
 import Wishlist from "./components/wishlist";
 import Loading from "../main/components/loading";
+import Empty from "./components/Empty";
 
 const Movie = (props:{movieLogId:string}) => {
+    if (props.movieLogId === 'NONE') {
+        return <Empty />;
+    }
+
     const supabase = useSupabaseBrowser();
 
     const {setIsLoading} = useMainProcessStore();
@@ -52,12 +58,12 @@ const Movie = (props:{movieLogId:string}) => {
                 
             </div>
             {
-                !isMounted ? <Loading /> : loading ? <Loading /> :
+                !isMounted || loading ? <Loading /> : !movieList?.length ? notFound() :
                     <>
                         <div className="movie_body">
                             {modalData && (<Modal data={modalData} onClose={() => setModalData(null)} />)}
                             <div className="list_section">
-                                {isMounted && movieList?.map((item, idx1) => {
+                                {isMounted && movieList.map((item, idx1) => {
                                     return (
                                         <Style.MovieCard $image={item.mp_poster} $idx={idx1} key={idx1} onClick={() => setModalData(item)}>
                                             <div className="card_container">
@@ -70,7 +76,7 @@ const Movie = (props:{movieLogId:string}) => {
                                                     <div className="card_ott">
                                                         {item.mi_provider.split(',').filter((p) => p !== 'NONE').map((platform, idx2) => {
                                                             return (
-                                                                <Style.PlatformBadge $image={platform} key={platform + idx2} />
+                                                                <Style.PlatformBadge $image={platform.trim()} key={platform + idx2} />
                                                             )
                                                         })}
                                                     </div>
