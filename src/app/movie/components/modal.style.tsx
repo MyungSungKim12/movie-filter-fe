@@ -31,13 +31,19 @@ export const ModalOverlay = styled.div<{ $isClosing: boolean }>`
 `;
 
 export const ModalContainer = styled.div`
+    @media (max-width: 1024px) {
+        max-height: 800px;
+    }
+    // mobile_view
+    @media (max-width: 480px) {
+        max-height: 650px;
+    }
     position: relative;
     display: flex;
     align-items: center;
     width: 90%;
     max-width: 1024px;
     height: 90%;
-    max-height: 640px;
     border: 1px solid rgba(128, 128, 128, 0.4);
     border-radius: 20px;
     overflow: hidden;
@@ -78,7 +84,7 @@ export const ModalContent = styled.div<{ $isClosing:boolean; $poster:string;$bac
     }
 
     .modal_head {
-        @media (max-width: 768px) {
+        @media (max-width: 1024px) {
             background-size: cover;
             background-position: center; 
         }
@@ -149,17 +155,28 @@ export const ModalContent = styled.div<{ $isClosing:boolean; $poster:string;$bac
                 width: calc(85% * 2 / 3);
                 height: 100%;
 
-                .movie_title {
+                .left_content_top {
                     // mobile_view
                     @media (max-width: 480px) {
                         margin-top: 60px;
-                        font-size: 3rem;
                     }
                     display: flex;
                     align-items: center;
                     gap: 20px;
-                    font-size: 4rem;
-                    font-weight: 700;
+                    width: 100%;
+
+                    .movie_title {
+                        @media (max-width: 1024px) {
+                            font-size: 3rem;
+                        }
+                        // mobile_view
+                        @media (max-width: 480px) {
+                            font-size: 2rem;
+                        }
+                        max-width: 85%;
+                        font-size: 4rem;
+                        font-weight: 700;
+                    }
                 }
 
                 .movie_genres {
@@ -202,6 +219,7 @@ export const ModalContent = styled.div<{ $isClosing:boolean; $poster:string;$bac
                     }
                     margin-top: 15px;
                     font-size: 1.5rem;
+                    padding-bottom: 30px;
                 }
 
                 .movie_shortcut {
@@ -223,12 +241,13 @@ export const ModalContent = styled.div<{ $isClosing:boolean; $poster:string;$bac
                 // mobile_view
                 @media (max-width: 480px) {
                     position: absolute;
-                    top: 30px;
+                    top: 50%;
                     left: 20px;
                     flex-direction: row;
                     justify-content: left;
                     gap: 2px;
                     width: 250px;
+                    height: fit-content;
                     margin: 0;
                 }
                 position: relative;

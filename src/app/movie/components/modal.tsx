@@ -98,8 +98,11 @@ const Modal = (props : ModalProps) => {
                         <div className="modal_content_bottom"></div>
                         <div className="modal_content_top">
                             <div className="modal_content_left">
-                                <div className="movie_title">
-                                    {props.data.mi_title}<Wishlist is_wishlist={props.data.is_wishlist} mi_id={props.data.mi_id} type={"M"} />
+                                <div className="left_content_top">
+                                    <div className="movie_title">
+                                        {props.data.mi_title}
+                                    </div>
+                                    <Wishlist is_wishlist={props.data.is_wishlist} mi_id={props.data.mi_id} type={"M"} />
                                 </div>
                                 <div className="movie_genres">
                                     {props.data.mi_genre.split(',').map((genre, idx) => {

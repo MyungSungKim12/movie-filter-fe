@@ -2,13 +2,20 @@ import styled, { keyframes, css } from 'styled-components';
 
 export const WishlistStyle = styled.button<{$isLoading:boolean; $type:string}>`
     @media (max-width: 1024px) {
-        width: 20px;
-        height: 20px;
-        font-size: 1rem;
+        width: ${({$type}) => $type === 'L' ? 20 : 25}px;
+        height: ${({$type}) => $type === 'L' ? 20 : 25}px;
+        font-size: ${({$type}) => $type === 'L' ? 1 : 1.3}rem;
     }
     @media (max-width: 768px) {
         top: 7px;
         right: 7px;
+    }
+    // mobile_view
+    @media (max-width: 480px) {
+        width: 19px;
+        height: 19px;
+        margin-bottom: 10px;
+        font-size: 1rem;
     }
     position: ${({$type}) => $type === 'L' ? 'absolute' : 'relative'};
     top: 5px;
@@ -19,6 +26,7 @@ export const WishlistStyle = styled.button<{$isLoading:boolean; $type:string}>`
     width: ${({$type}) => $type === 'L' ? 25 : 33}px;
     height: ${({$type}) => $type === 'L' ? 25 : 33}px;
     padding: 0;
+    margin-bottom: 3px;
     border: 1px solid rgba(255, 255, 255, 0.3);
     border-radius: 50%;
     font-size: ${({$type}) => $type === 'L' ? 1.3 : 1.6}rem;
