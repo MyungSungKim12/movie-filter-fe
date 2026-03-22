@@ -10,7 +10,7 @@ export default function LoginSuccess() {
 
   useEffect(() => {
     // 1. URL 파라미터에서 'token' 꺼내기
-    const token = searchParams.get('token');
+    const token = searchParams.get('accessToken');
 
     if (token) {
       // 2. 브라우저 로컬 스토리지에 토큰 저장
