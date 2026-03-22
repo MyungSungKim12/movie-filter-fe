@@ -15,28 +15,27 @@ import Footer from "./components/footer";
 import Header from "./components/header";
 
 interface MainProps {
-  params?: Promise<{ id: string }>;
+    params?: Promise<{ id: string }>;
 }
 
-const Main = ({ params }:MainProps) => {
+const Main = ({ params }: MainProps) => {
     const router = useRouter();
 
-    const {process, setProcess, isLoading, setIsLoading} = useMainProcessStore();
-    const {movieLogId, setMovieLogId} = useMovieListStore()
-    
-    const [id, setId] = useState<string|null>(null);;
+    const { process, setProcess, isLoading, setIsLoading } = useMainProcessStore();
+    const { movieLogId, setMovieLogId } = useMovieListStore();
+
+    const [id, setId] = useState<string | null>(null);
 
     useEffect(() => {
-        if(process === 4 && movieLogId && !id) {
+        if (process === 4 && movieLogId && !id) {
             router.push(`/movieLogId/${movieLogId}`);
         }
     }, [process, movieLogId, router, id]);
 
     useEffect(() => {
-        if(params) {
+        if (params) {
             params.then(resolved => {
                 if (resolved && resolved.id) {
-                    // setIsLoading(true);
                     setId(resolved.id);
                     setProcess(4);
                 }
@@ -44,27 +43,23 @@ const Main = ({ params }:MainProps) => {
         }
     }, [params]);
 
-    useEffect(() => {
-        localStorage.setItem('user_id', '1');
-    }, []);
-
     return (
         <>
             <Header />
             <Style.Main>
                 {
-                    isLoading ? 
+                    isLoading ?
                         <Loading />
                         :
-                    process === 0 ? 
+                    process === 0 ?
                         <div className="main_start">
-                            <button className="main_button" onClick={() => setProcess(1)}>시작하기</button> 
+                            <button className="main_button" onClick={() => setProcess(1)}>시작하기</button>
                         </div>
                         :
-                    process > 0 && process < 4? 
+                    process > 0 && process < 4 ?
                         <Option />
-                        : 
-                    process === 4 && id !== null ? 
+                        :
+                    process === 4 && id !== null ?
                         <Movie movieLogId={id} />
                         :
                         <></>
@@ -72,7 +67,7 @@ const Main = ({ params }:MainProps) => {
             </Style.Main>
             <Footer />
         </>
-    )
-}
+    );
+};
 
 export default Main;

@@ -14,8 +14,8 @@ import useMainProcessStore from "../stores/useMainProcessStore";
 import Modal from "./components/modal";
 import Wishlist from "./components/wishlist";
 import Loading from "../main/components/loading";
-import Empty from "./components/empty";
-
+import Empty from "./components/Empty";
+import axiosInstance from "../lib/axiosInstance";
 const Movie = (props:{movieLogId:string}) => {
     if (props.movieLogId === 'NONE') {
         return <Empty />;
@@ -47,7 +47,7 @@ const Movie = (props:{movieLogId:string}) => {
     const [isMounted, setIsMounted] = useState(false);
 
     const onClickMovieCard = (item:any) => {
-        axios({
+        axiosInstance({
             method: "POST",
             url: "/local/api/user/clickLog",
             data: {uiId: localStorage.getItem('user_id'), miId: item.mi_id},
@@ -55,8 +55,7 @@ const Movie = (props:{movieLogId:string}) => {
         }).then((res):void => {
             console.log("서버 응답:", res.data);
         }).catch((err):void => {
-            alert("서버를 확인해주세요.");
-            console.log(err.message);
+            console.error(err.message); // alert 제거 (클릭마다 alert 뜨는 거 방지)
         });
         setModalData(item);
     }
