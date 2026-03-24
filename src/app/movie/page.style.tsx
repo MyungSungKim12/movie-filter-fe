@@ -28,8 +28,10 @@ export const Movie = styled('div')`
 
     .movie_body {
         display: flex;
-        justify-content: center;
+        flex-direction: column;
+        align-items: center;
         width: 100%;
+        height: 100%;
 
         .list_section {
             display: flex;
@@ -38,10 +40,11 @@ export const Movie = styled('div')`
             align-items: center;
             gap: 15px;
             width: 80%;
-
+            height: auto;
         }
         .button_section {
-
+            height: 20px;
+            padding: 50px;
         }
     }
 `

@@ -51,11 +51,6 @@ const Header = () => {
             if (error) throw error;
             setProfileUrl(data?.ui_image ?? null);
             setUserName(data?.ui_name ?? null);
-            const res = await api.get('/local/api/user/profile-image', {
-                params: { userId: uid },
-            });
-            const url = res.data?.profileImageUrl;
-            setProfileUrl(url && url.length > 0 ? url : null);
         } catch {
             setProfileUrl(null);
             setUserName(null);
