@@ -7,6 +7,7 @@ import { jwtDecode, JwtPayload } from 'jwt-decode';
 import axiosInstance from "../../lib/axiosInstance";
 import useSupabaseBrowser from "../../supabase/supabase-browser";
 import { getProfileImageQuery } from "../../queries/getMypageQuery";
+import api from "@/app/axios";
 
 interface CustomJwtPayload extends JwtPayload {
     sub?: string;
@@ -50,6 +51,11 @@ const Header = () => {
             if (error) throw error;
             setProfileUrl(data?.ui_image ?? null);
             setUserName(data?.ui_name ?? null);
+            const res = await api.get('/local/api/user/profile-image', {
+                params: { userId: uid },
+            });
+            const url = res.data?.profileImageUrl;
+            setProfileUrl(url && url.length > 0 ? url : null);
         } catch {
             setProfileUrl(null);
             setUserName(null);
@@ -101,7 +107,7 @@ const Header = () => {
             formData.append('files', file);
             formData.append('userId', userId);
 
-            const res = await axiosInstance.post('/local/api/user/uploadImage', formData);
+            const res = await api.post('/local/api/user/uploadImage', formData);
 
             const newUrl = res.data?.profileImageUrl;
             if (newUrl && newUrl.length > 0) {

@@ -14,7 +14,7 @@ import useMainProcessStore from "../stores/useMainProcessStore";
 import Modal from "./components/modal";
 import Wishlist from "./components/wishlist";
 import Loading from "../main/components/loading";
-import Empty from "./components/Empty";
+import Empty from "./components/empty";
 import axiosInstance from "../lib/axiosInstance";
 const Movie = (props:{movieLogId:string}) => {
     if (props.movieLogId === 'NONE') {
