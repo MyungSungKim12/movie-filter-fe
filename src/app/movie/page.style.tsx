@@ -43,8 +43,6 @@ export const Movie = styled('div')`
             height: auto;
         }
         .button_section {
-            height: 20px;
-            padding: 50px;
         }
     }
 `

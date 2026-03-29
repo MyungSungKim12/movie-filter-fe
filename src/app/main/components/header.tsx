@@ -8,6 +8,8 @@ import axiosInstance from "../../lib/axiosInstance";
 import useSupabaseBrowser from "../../supabase/supabase-browser";
 import { getProfileImageQuery } from "../../queries/getMypageQuery";
 import api from "@/app/axios";
+import useMainProcessStore from "@/app/stores/useMainProcessStore";
+import useMovieListStore from "@/app/stores/useMovieListStore";
 
 interface CustomJwtPayload extends JwtPayload {
     sub?: string;
@@ -16,6 +18,9 @@ interface CustomJwtPayload extends JwtPayload {
 const Header = () => {
     const router = useRouter();
     const supabase = useSupabaseBrowser();
+
+    const { setProcess } = useMainProcessStore();
+    const { setMovieLogId } = useMovieListStore();
 
     const [isLoggedIn, setIsLoggedIn]     = useState(false);
     const [userEmail, setUserEmail]       = useState('');
@@ -128,9 +133,15 @@ const Header = () => {
         router.push('/');
     };
 
+    const moveHome = () => {
+        setProcess(0);
+        setMovieLogId('');
+        router.push('/');
+    }
+
     return (
         <HeaderStyle>
-            <LogoArea onClick={() => router.push('/')}>LOGO</LogoArea>
+            <LogoArea onClick={() => moveHome()}>LOGO</LogoArea>
 
             <UserSection>
                 {isLoggedIn ? (

@@ -5,7 +5,7 @@ export const Main = styled('div')`
     flex-direction: column;
     align-items: center;
     width: 100%;
-    height: 100%;
+    /* height: 100%; */
     min-height: 100vh;
     background: linear-gradient(
         to right, 
@@ -28,6 +28,7 @@ export const Main = styled('div')`
         justify-content: center;
         width: 100%;
         height: 100%;
+        min-height: 100vh;
 
         .main_button {
             position: absolute;

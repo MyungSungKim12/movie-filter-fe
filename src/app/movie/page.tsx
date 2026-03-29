@@ -7,7 +7,7 @@ import { useEffect, useState } from "react";
 import { useQuery } from "@supabase-cache-helpers/postgrest-react-query";
 import { getRecommendMovieListQuery } from "../queries/getMovieQuery";
 import useSupabaseBrowser from "../supabase/supabase-browser";
-import axios from "axios";
+import api from "@/app/axios";
 
 import useMainProcessStore from "../stores/useMainProcessStore";
 
@@ -15,7 +15,7 @@ import Modal from "./components/modal";
 import Wishlist from "./components/wishlist";
 import Loading from "../main/components/loading";
 import Empty from "./components/empty";
-import axiosInstance from "../lib/axiosInstance";
+
 const Movie = (props:{movieLogId:string}) => {
     if (props.movieLogId === 'NONE') {
         return <Empty />;
@@ -47,7 +47,7 @@ const Movie = (props:{movieLogId:string}) => {
     const [isMounted, setIsMounted] = useState(false);
 
     const onClickMovieCard = (item:any) => {
-        axiosInstance({
+        api({
             method: "POST",
             url: "/local/api/user/clickLog",
             data: {uiId: localStorage.getItem('user_id'), miId: item.mi_id},
