@@ -30,7 +30,8 @@ api.interceptors.response.use(
         if (error.response?.status === 401 && !originalRequest._retry) {
             originalRequest._retry = true;
 
-            if (originalRequest.url.includes('/api/user/reissue')) {
+            if (originalRequest.url.includes('/api/user/reissue') ||
+                originalRequest.url.includes('/local/api/user/reissue')) {
                 console.warn("리프레시 토큰도 만료되었습니다. 로그아웃 처리합니다.");
                 localStorage.removeItem('accessToken');
                 window.location.href = '/';
@@ -38,24 +39,22 @@ api.interceptors.response.use(
             }
 
             try {
-                const res = await api({
-                    method: "POST",
-                    url: "/api/user/reissue",
-                    withCredentials: true
-                });
+                const res = await axios.post(
+                    'http://localhost:3000/local/api/user/reissue',
+                    {},
+                    { withCredentials: true }
+                );
 
                 if (res.status === 200) {
                     const newAccessToken = res.data.accessToken;
                     localStorage.setItem('accessToken', newAccessToken);
-            
-                    // 기존 요청에 새 토큰 박아서 재시도
                     originalRequest.headers.Authorization = `Bearer ${newAccessToken}`;
                     return axios(originalRequest);
                 }
             } catch (reissueError) {
                 console.error("리프레시 토큰 만료됨");
                 localStorage.removeItem('accessToken');
-                window.location.href = '/'; 
+                window.location.href = '/';
                 return Promise.reject(reissueError);
             }
         }

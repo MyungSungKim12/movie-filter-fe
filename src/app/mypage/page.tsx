@@ -18,7 +18,7 @@ import { useQuery } from "@supabase-cache-helpers/postgrest-react-query";
 
 import Modal from "../movie/components/modal";
 import Wishlist from "../movie/components/wishlist";
-
+import Footer from '../main/components/footer';
 const CARD_WIDTH = 130;
 const CARD_GAP   = 12;
 
@@ -219,6 +219,7 @@ const MyPage = () => {
     const hasStats = emotionStats.length > 0 || genreStats.length > 0;
 
     return (
+        <>
         <Style.PageWrapper>
             <Header />
             <Style.MainContent>
@@ -485,6 +486,8 @@ const MyPage = () => {
                 )}
             </Style.MainContent>
         </Style.PageWrapper>
+        <Footer />
+        </>
     );
 };
 

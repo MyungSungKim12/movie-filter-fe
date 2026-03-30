@@ -8,6 +8,7 @@ import axiosInstance from "../../lib/axiosInstance";
 import useSupabaseBrowser from "../../supabase/supabase-browser";
 import { getProfileImageQuery } from "../../queries/getMypageQuery";
 import api from "@/app/axios";
+import axios from 'axios';
 import useMainProcessStore from "@/app/stores/useMainProcessStore";
 import useMovieListStore from "@/app/stores/useMovieListStore";
 
@@ -107,7 +108,13 @@ const Header = () => {
             formData.append('files', file);
             formData.append('userId', userId);
 
-            const res = await api.post('/local/api/user/uploadImage', formData);
+            //const res = await api.post('/local/api/user/uploadImage', formData);
+            const res = await axios.post('/local/api/user/uploadImage', formData, {
+                headers: {
+                    Authorization: `Bearer ${localStorage.getItem('accessToken')}`,
+                },
+                withCredentials: true,
+            });
 
             const newUrl = res.data?.profileImageUrl;
             if (newUrl && newUrl.length > 0) {
