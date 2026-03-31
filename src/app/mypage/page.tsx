@@ -79,20 +79,21 @@ const MyPage = () => {
 
         // 이미지·이름·이메일 모두 Supabase에서 직접 조회 (토큰 파싱 불필요)
         if (uid) {
-            getProfileImageQuery(supabase, uid)
-                .then(({ data, error }) => {
+            (async () => {
+                try {
+                    const { data, error } = await getProfileImageQuery(supabase, uid);
                     if (error || !data) return;
                     setProfileUrl(data.ui_image || null);
                     setUserName(data.ui_name || null);
                     setUserEmail(data.ui_email || '');
-                })
-                .catch(() => {
+                } catch {
                     setProfileUrl(null);
                     setUserName(null);
-                });
+                }
+            })();
         }
     }, []);
-
+    
     const enabled = isMounted && userId.length > 0;
 
     const { data: wishlist, isLoading: wishlistLoading } = useQuery(

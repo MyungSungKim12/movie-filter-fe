@@ -39,11 +39,12 @@ api.interceptors.response.use(
             }
 
             try {
-                const res = await axios.post(
-                    'http://localhost:3000/local/api/user/reissue',
-                    {},
-                    { withCredentials: true }
-                );
+                // const res = await axios.post(
+                //     'http://localhost:3000/local/api/user/reissue',
+                //     {},
+                //     { withCredentials: true }
+                // );
+                const res = await axios.post('/local/api/user/reissue', {}, { withCredentials: true });
 
                 if (res.status === 200) {
                     const newAccessToken = res.data.accessToken;

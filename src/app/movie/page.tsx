@@ -14,7 +14,7 @@ import useMainProcessStore from "../stores/useMainProcessStore";
 import Modal from "./components/modal";
 import Wishlist from "./components/wishlist";
 import Loading from "../main/components/loading";
-import Empty from "./components/empty";
+import Empty from "./components/Empty";
 import axios from 'axios';
 
 const Movie = (props:{movieLogId:string}) => {

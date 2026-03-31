@@ -1,9 +1,10 @@
 'use client';
 
+import { Suspense } from 'react';
 import { useEffect } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 
-export default function LoginSuccess() {
+function LoginSuccessContent() {
     const searchParams = useSearchParams();
     const router = useRouter();
 
@@ -38,5 +39,20 @@ export default function LoginSuccess() {
                 <p className="text-gray-500">잠시만 기다려 주세요.</p>
             </div>
         </div>
+    );
+}
+
+export default function LoginSuccess() {
+    return (
+        <Suspense fallback={
+            <div className="flex items-center justify-center min-h-screen">
+                <div className="text-center">
+                    <h2 className="text-2xl font-bold mb-2">로그인 처리 중...</h2>
+                    <p className="text-gray-500">잠시만 기다려 주세요.</p>
+                </div>
+            </div>
+        }>
+            <LoginSuccessContent />
+        </Suspense>
     );
 }

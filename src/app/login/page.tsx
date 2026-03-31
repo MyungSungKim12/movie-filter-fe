@@ -6,7 +6,8 @@ import styles from './login.module.css';
 export default function LoginPage() {
   const handleLogin = (provider: string) => {
     // 백엔드 서버 주소
-    const BACKEND_URL = 'http://localhost:8080';
+    //const BACKEND_URL = 'http://localhost:8080';
+    const BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:8080';
 
     if (provider === 'google') {
       window.location.href = `${BACKEND_URL}/oauth2/authorization/google`;

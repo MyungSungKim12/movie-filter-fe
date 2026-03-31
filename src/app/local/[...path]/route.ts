@@ -34,7 +34,8 @@ async function proxyRequest(
 ) {
     const path = params.path.join('/');
     const search = request.nextUrl.search;
-    const targetUrl = `http://localhost:8080/${path}${search}`;
+    //const targetUrl = `http://localhost:8080/${path}${search}`;
+    const targetUrl = `${process.env.BACKEND_URL}/${path}${search}`;
 
     // 요청 헤더 복사 (Authorization 포함)
     const headers = new Headers();
