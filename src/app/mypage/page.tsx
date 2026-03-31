@@ -12,6 +12,7 @@ import {
     getMypageWishlistQuery,
     getMypageClickLogQuery,
     getMypagePreferenceStatsQuery,
+    getProfileImageQuery,
 } from "../queries/getMypageQuery";
 import { useQuery } from "@supabase-cache-helpers/postgrest-react-query";
 
@@ -57,8 +58,9 @@ const MyPage = () => {
     const [modalData, setModalData]   = useState<any>(null);
     const [isMounted, setIsMounted]   = useState(false);
     const [profileUrl, setProfileUrl] = useState<string | null>(null);
+    const [userName, setUserName]     = useState<string | null>(null);
     const [userEmail, setUserEmail]   = useState('');
-    const [userId, setUserId]         = useState(''); // 임시 하드코딩, 추후 토큰에서 추출
+    const [userId, setUserId]         = useState('');
 
     // 캐러셀 상태
     const viewportRef                         = useRef<HTMLDivElement>(null);
@@ -72,23 +74,23 @@ const MyPage = () => {
         setIsMounted(true);
         if (typeof window === 'undefined') return;
 
-        // 유저 정보 로드
         const uid = localStorage.getItem('user_id') ?? '';
         setUserId(uid);
 
-        const token = localStorage.getItem('accessToken');
-        if (token) {
-            try {
-                const payload = JSON.parse(atob(token.split('.')[1]));
-                setUserEmail(payload?.sub ?? '');
-            } catch {}
+        // 이미지·이름·이메일 모두 Supabase에서 직접 조회 (토큰 파싱 불필요)
+        if (uid) {
+            getProfileImageQuery(supabase, uid)
+                .then(({ data, error }) => {
+                    if (error || !data) return;
+                    setProfileUrl(data.ui_image || null);
+                    setUserName(data.ui_name || null);
+                    setUserEmail(data.ui_email || '');
+                })
+                .catch(() => {
+                    setProfileUrl(null);
+                    setUserName(null);
+                });
         }
-
-        // 프로필 이미지 로드
-        fetch(`/local/api/user/profile-image?userId=${uid}`)
-            .then(r => r.json())
-            .then(d => setProfileUrl(d?.profileImageUrl || null))
-            .catch(() => {});
     }, []);
 
     const enabled = isMounted && userId.length > 0;
@@ -406,7 +408,7 @@ const MyPage = () => {
                             </Style.ProfileAvatar>
                             <div>
                                 <Style.ProfileName>
-                                    {userEmail ? userEmail.split('@')[0] : '사용자'}
+                                    {userName ?? (userEmail ? userEmail.split('@')[0] : '사용자')}
                                 </Style.ProfileName>
                                 <Style.ProfileMeta>{userEmail}</Style.ProfileMeta>
                             </div>

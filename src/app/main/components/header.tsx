@@ -5,6 +5,11 @@ import { useRouter } from 'next/navigation';
 import { useEffect, useState, useRef } from 'react';
 import { jwtDecode, JwtPayload } from 'jwt-decode';
 import axiosInstance from "../../lib/axiosInstance";
+import useSupabaseBrowser from "../../supabase/supabase-browser";
+import { getProfileImageQuery } from "../../queries/getMypageQuery";
+import api from "@/app/axios";
+import useMainProcessStore from "@/app/stores/useMainProcessStore";
+import useMovieListStore from "@/app/stores/useMovieListStore";
 
 interface CustomJwtPayload extends JwtPayload {
     sub?: string;
@@ -12,9 +17,14 @@ interface CustomJwtPayload extends JwtPayload {
 
 const Header = () => {
     const router = useRouter();
+    const supabase = useSupabaseBrowser();
+
+    const { setProcess } = useMainProcessStore();
+    const { setMovieLogId } = useMovieListStore();
 
     const [isLoggedIn, setIsLoggedIn]     = useState(false);
     const [userEmail, setUserEmail]       = useState('');
+    const [userName, setUserName]         = useState<string | null>(null);
     const [userId, setUserId]             = useState<string | null>(null);
     const [profileUrl, setProfileUrl]     = useState<string | null>(null);
     const [uploading, setUploading]       = useState(false);
@@ -42,13 +52,13 @@ const Header = () => {
 
     const fetchProfileImage = async (uid: string) => {
         try {
-            const res = await axiosInstance.get('/local/api/user/profile-image', {
-                params: { userId: uid },
-            });
-            const url = res.data?.profileImageUrl;
-            setProfileUrl(url && url.length > 0 ? url : null);
+            const { data, error } = await getProfileImageQuery(supabase, uid);
+            if (error) throw error;
+            setProfileUrl(data?.ui_image ?? null);
+            setUserName(data?.ui_name ?? null);
         } catch {
             setProfileUrl(null);
+            setUserName(null);
         }
     };
 
@@ -97,7 +107,7 @@ const Header = () => {
             formData.append('files', file);
             formData.append('userId', userId);
 
-            const res = await axiosInstance.post('/local/api/user/uploadImage', formData);
+            const res = await api.post('/local/api/user/uploadImage', formData);
 
             const newUrl = res.data?.profileImageUrl;
             if (newUrl && newUrl.length > 0) {
@@ -123,14 +133,20 @@ const Header = () => {
         router.push('/');
     };
 
+    const moveHome = () => {
+        setProcess(0);
+        setMovieLogId('');
+        router.push('/');
+    }
+
     return (
         <HeaderStyle>
-            <LogoArea onClick={() => router.push('/')}>LOGO</LogoArea>
+            <LogoArea onClick={() => moveHome()}>LOGO</LogoArea>
 
             <UserSection>
                 {isLoggedIn ? (
                     <ProfileArea ref={dropdownRef}>
-                        <EmailLabel>{userEmail}님</EmailLabel>
+                        <EmailLabel>{userName ?? userEmail}님</EmailLabel>
 
                         <ProfileBtn
                             onClick={() => setDropdownOpen(prev => !prev)}

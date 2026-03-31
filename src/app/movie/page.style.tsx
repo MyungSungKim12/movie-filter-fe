@@ -28,8 +28,10 @@ export const Movie = styled('div')`
 
     .movie_body {
         display: flex;
-        justify-content: center;
+        flex-direction: column;
+        align-items: center;
         width: 100%;
+        height: 100%;
 
         .list_section {
             display: flex;
@@ -38,10 +40,9 @@ export const Movie = styled('div')`
             align-items: center;
             gap: 15px;
             width: 80%;
-
+            height: auto;
         }
         .button_section {
-
         }
     }
 `
@@ -122,10 +123,10 @@ export const MovieCard = styled('div')<{$image:string; $idx:number}>`
             @media (max-width: 768px) {
                 position: relative;
                 justify-content: flex-start;
-                padding: 20px 5px;
+                padding: 5px;
             }
             position: absolute;
-            bottom: 5px;
+            bottom: 0;
             display: flex; 
             flex-direction: column; 
             justify-content: space-between;
@@ -168,7 +169,7 @@ export const MovieCard = styled('div')<{$image:string; $idx:number}>`
                     @media (max-width: 500px) {
                         font-size: 1.3rem;
                     }
-                    padding: 0 15px;
+                    padding: 0 10px;
                     font-size: 1.5rem;
                     font-weight: 700;
                 }
@@ -184,16 +185,22 @@ export const MovieCard = styled('div')<{$image:string; $idx:number}>`
                     @media (max-width: 500px) {
                         font-size: 1rem;
                     }
-                    padding: 5px 15px;
+                    padding: 5px 10px;
                     font-size: 1.2rem;
                 }
 
                 .card_genres {
+                    // mobile_view
+                    @media (max-width: 500px) {
+                        justify-content: left;
+                        width: 85%;
+                    }
                     display: flex;
                     flex-wrap: wrap;
+                    justify-content: center;
                     align-items: center;
-                    gap: 2px;
-                    padding: 5px 15px;
+                    gap: 1px;
+                    padding: 5px 7px;
 
                     .card_genre {
                         @media (max-width: 1024px) {
@@ -204,9 +211,9 @@ export const MovieCard = styled('div')<{$image:string; $idx:number}>`
                         }
                         // mobile_view
                         @media (max-width: 500px) {
-                            font-size: .9rem;
+                            font-size: .8rem;
                         }
-                        padding: 0 7px;
+                        padding: 2px 7px;
                         border: 1px solid rgba(255, 255, 255, 0.1);
                         border-radius: 7px;
                         background-color: rgba(0, 0, 0, 0.4);

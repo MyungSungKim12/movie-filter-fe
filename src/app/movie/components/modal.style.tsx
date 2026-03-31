@@ -134,12 +134,11 @@ export const ModalContent = styled.div<{ $isClosing: boolean; $poster: string; $
         }
 
         .modal_content_top {
-            @media (max-width: 1024px) { padding: 5px 0 5px 35px; }
-            @media (max-width: 480px)  { justify-content: center; padding: 5px; }
+            @media (max-width: 1024px) { padding: 310px 0 5px 35px; }
+            @media (max-width: 480px)  { justify-content: center; padding: 200px 5px 5px; }
             display: flex;
             width: 100%;
-            height: auto;
-            padding: 5px 0 5px 50px;
+            padding: 390px 0 5px 50px;
 
             .modal_content_left {
                 @media (max-width: 480px) { width: 90%; }
@@ -284,6 +283,7 @@ export const RatingBadge = styled('div')<{ $score: number }>`
     flex-direction: column;
     width: 160px;
     padding: 12px 14px;
+    margin-top: 15px;
     border-radius: 10px;
     background: #1a1a1a;
     color: #FFFFFF;
