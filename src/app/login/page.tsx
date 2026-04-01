@@ -14,7 +14,8 @@ export default function LoginPage() {
     }else if (provider === 'kakao') {
       window.location.href = `${BACKEND_URL}/oauth2/authorization/kakao`;
     }else if (provider === 'naver') {
-      window.location.href = `http://localhost:8080/oauth2/authorization/naver`;
+      //window.location.href = `http://localhost:8080/oauth2/authorization/naver`;
+      window.location.href = `${BACKEND_URL}/oauth2/authorization/naver`;
     }else {
       alert(`${provider} 로그인은 준비 중입니다.`);
     }

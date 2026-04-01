@@ -49,7 +49,11 @@ const Option = () => {
             method: "POST",
             url: "/local/api/movie/recommend",
             data: {userId: localStorage.getItem('user_id'), option: optionArr},
-            headers: {'Content-type': 'application/json'}
+            headers: {
+                'Content-type': 'application/json',
+                Authorization: `Bearer ${localStorage.getItem('accessToken')}`,
+            },
+            withCredentials: true,
         }).then((res):void => {
             console.log("서버 응답:", res.data);
             if(res.data !== null || res.data.length !== 0) {
