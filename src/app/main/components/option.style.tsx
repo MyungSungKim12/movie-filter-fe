@@ -39,6 +39,17 @@ export const OptionStyle = styled('div')<{$process:number}>`
     display: flex;
     flex-direction: column;
     justify-content: center;
+    @media (max-height: 500px) {
+        height: 360px;
+    }
+    @media (max-width: 768px) {
+        width: 370px;
+        height: 360px;
+    }
+    // mobile_view
+    @media (max-width: 500px) {
+        width: 370px;
+    }
     width: 470px;
     height: 430px;
     padding: 30px;
@@ -134,6 +145,14 @@ export const OptionStyle = styled('div')<{$process:number}>`
 `
 
 export const OptionItem = styled('div')<{$process:number, $select:boolean}>`
+    @media (max-height: 500px) {
+        height: ${({$process}) => $process === 1 ? 60 : 40}px;
+    }
+    @media (max-width: 768px) {
+        width: ${({$process}) => $process === 1 ? 100 : 75}px;
+        height: ${({$process}) => $process === 1 ? 50 : 40}px;
+        margin: 5px;
+    }
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -151,11 +170,17 @@ export const OptionItem = styled('div')<{$process:number, $select:boolean}>`
     animation: ${fadeIn} 1s ease-out .2s forwards;
 
     .option_icon {
+        @media (max-width: 768px) {
+            font-size: 1.2rem;
+        }
         padding-bottom: 2px;
         font-size: 1.7rem;
     }
 
     .option_title {
+        @media (max-width: 768px) {
+            font-size: 1rem;
+        }
         font-size: 1.5rem;
     }
     
