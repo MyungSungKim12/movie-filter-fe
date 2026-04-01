@@ -70,6 +70,7 @@ const Option = () => {
         }).finally(() => {
             setIsLoading(false); 
         });
+    }
 
     const selectOptionItem = (optionId:string, optionType:string, optionTitle:string) => {
         if(optionArr.some(item => item.id === optionId)) {
