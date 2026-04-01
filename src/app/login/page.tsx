@@ -31,10 +31,10 @@ export default function LoginPage() {
 
         <div className={styles.buttonBox}>
           {/* 구글 버튼 */}
-          <button onClick={() => handleLogin('google')} className={`${styles.loginBtn} ${styles.btnGoogle}`}>
+          {/*<button onClick={() => handleLogin('google')} className={`${styles.loginBtn} ${styles.btnGoogle}`}>
             <img src="https://www.gstatic.com/images/branding/product/1x/gsa_512dp.png" alt="G" className={styles.icon} />
             Google로 시작하기
-          </button>
+          </button>*/}
 
           {/* 카카오 버튼 */}
           <button onClick={() => handleLogin('kakao')} className={`${styles.loginBtn} ${styles.btnKakao}`}>
