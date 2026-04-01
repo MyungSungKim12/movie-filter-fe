@@ -148,7 +148,20 @@ const Header = () => {
 
     return (
         <HeaderStyle>
-            <LogoArea onClick={() => moveHome()}>LOGO</LogoArea>
+            <LogoArea onClick={() => moveHome()}>
+                <svg width="26" height="30" viewBox="0 0 28 36" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <rect width="28" height="36" rx="3" fill="#E50914"/>
+                    <rect x="3" y="3" width="5" height="5" rx="1" fill="#0a0a0a"/>
+                    <rect x="11" y="3" width="5" height="5" rx="1" fill="#0a0a0a"/>
+                    <rect x="20" y="3" width="5" height="5" rx="1" fill="#0a0a0a"/>
+                    <rect x="3" y="28" width="5" height="5" rx="1" fill="#0a0a0a"/>
+                    <rect x="11" y="28" width="5" height="5" rx="1" fill="#0a0a0a"/>
+                    <rect x="20" y="28" width="5" height="5" rx="1" fill="#0a0a0a"/>
+                    <rect x="3" y="11" width="22" height="14" rx="1.5" fill="rgba(0,0,0,0.35)"/>
+                    <polygon points="9,14 9,22 20,18" fill="white"/>
+                </svg>
+                <LogoText>Movie<span>Filter</span></LogoText>
+            </LogoArea>
 
             <UserSection>
                 {isLoggedIn ? (
@@ -233,7 +246,11 @@ const HeaderStyle = styled.div`
     z-index: 500;
     @media (max-width: 768px) { padding: 0 20px; }
 `;
-const LogoArea = styled.div`cursor: pointer; font-weight: 700; font-size: 16px; letter-spacing: 2px;`;
+const LogoArea = styled.div`cursor: pointer; display: flex; align-items: center; gap: 8px;`;
+const LogoText = styled.span`
+    font-size: 17px; font-weight: 800; letter-spacing: -0.3px; color: white;
+    span { color: #E50914; }
+`;
 const UserSection = styled.div`display: flex; align-items: center; gap: 12px;`;
 const EmailLabel = styled.span`font-size: 13px; color: #aaa; @media (max-width: 600px) { display: none; }`;
 const ProfileArea = styled.div`position: relative; display: flex; align-items: center; gap: 12px;`;
