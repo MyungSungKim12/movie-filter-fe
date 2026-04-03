@@ -5,8 +5,11 @@ import * as Style from "./page.style";
 import useMainProcessStore from "../stores/useMainProcessStore";
 import useMovieListStore from "../stores/useMovieListStore";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 import { useRouter } from 'next/navigation';
+import { useQuery } from "@supabase-cache-helpers/postgrest-react-query";
+import useSupabaseBrowser from "../supabase/supabase-browser";
+import { getHeroPosterQuery } from "../queries/getMovieQuery";
 
 import Option from "./components/option";
 import Movie from "../movie/page";
@@ -14,19 +17,39 @@ import Loading from "./components/loading";
 import Footer from "./components/footer";
 import Header from "./components/header";
 
+const TMDB_BASE = "https://image.tmdb.org/t/p/w300";
+
 interface MainProps {
     params?: Promise<{ id: string }>;
 }
 
-const GRID_ITEMS = Array.from({ length: 30 });
-
 const Main = ({ params }: MainProps) => {
     const router = useRouter();
+    const supabase = useSupabaseBrowser();
 
     const { process, setProcess, isLoading } = useMainProcessStore();
-    const { movieLogId, setMovieLogId } = useMovieListStore();
+    const { movieLogId } = useMovieListStore();
 
     const [id, setId] = useState<string | null>(null);
+
+    // Supabase에서 포스터 가져오기
+    const { data: posterData } = useQuery(
+        getHeroPosterQuery(supabase),
+        { staleTime: Infinity, gcTime: 1000 * 60 * 60 }
+    );
+
+    // 포스터 경로 배열
+    const posters = useMemo(() => {
+        if (!posterData) return [];
+        return posterData
+            .map((p: any) => p.mp_poster)
+            .filter(Boolean) as string[];
+    }, [posterData]);
+
+    // 3열로 나누기
+    const col1 = useMemo(() => posters.filter((_, i) => i % 3 === 0), [posters]);
+    const col2 = useMemo(() => posters.filter((_, i) => i % 3 === 1), [posters]);
+    const col3 = useMemo(() => posters.filter((_, i) => i % 3 === 2), [posters]);
 
     useEffect(() => {
         if (process === 4 && movieLogId && !id) {
@@ -54,11 +77,56 @@ const Main = ({ params }: MainProps) => {
                 ) : process === 0 ? (
                     <div className="hero">
                         <div className="hero_bg" />
-                        <div className="hero_grid">
-                            {GRID_ITEMS.map((_, i) => (
-                                <div className="hero_grid_item" key={i} />
-                            ))}
-                        </div>
+
+                        {/* 데스크탑: 세로 스크롤 포스터 3열 */}
+                        {posters.length > 0 && (
+                            <div className="hero_poster_grid">
+                                <div className="poster_col poster_col_up">
+                                    {[...col1, ...col1].map((path, i) => (
+                                        <div
+                                            key={i}
+                                            className="poster_card"
+                                            style={{ backgroundImage: `url(${TMDB_BASE}${path})` }}
+                                        />
+                                    ))}
+                                </div>
+                                <div className="poster_col poster_col_down">
+                                    {[...col2, ...col2].map((path, i) => (
+                                        <div
+                                            key={i}
+                                            className="poster_card"
+                                            style={{ backgroundImage: `url(${TMDB_BASE}${path})` }}
+                                        />
+                                    ))}
+                                </div>
+                                <div className="poster_col poster_col_up2">
+                                    {[...col3, ...col3].map((path, i) => (
+                                        <div
+                                            key={i}
+                                            className="poster_card"
+                                            style={{ backgroundImage: `url(${TMDB_BASE}${path})` }}
+                                        />
+                                    ))}
+                                </div>
+                            </div>
+                        )}
+
+                        {/* 모바일: 가로 슬라이드 포스터 배너 */}
+                        {posters.length > 0 && (
+                            <div className="hero_poster_mobile">
+                                <div className="poster_row">
+                                    {[...posters, ...posters].map((path, i) => (
+                                        <div
+                                            key={i}
+                                            className="poster_card_mobile"
+                                            style={{ backgroundImage: `url(${TMDB_BASE}${path})` }}
+                                        />
+                                    ))}
+                                </div>
+                            </div>
+                        )}
+
+                        {/* 히어로 콘텐츠 */}
                         <div className="hero_content">
                             <div className="hero_badge">
                                 <div className="badge_dot" />

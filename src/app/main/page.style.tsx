@@ -1,4 +1,19 @@
-import styled from "styled-components";
+import styled, { keyframes } from "styled-components";
+
+const scrollUp = keyframes`
+    0%   { transform: translateY(0); }
+    100% { transform: translateY(-50%); }
+`;
+
+const scrollDown = keyframes`
+    0%   { transform: translateY(-50%); }
+    100% { transform: translateY(0); }
+`;
+
+const scrollLeft = keyframes`
+    0%   { transform: translateX(0); }
+    100% { transform: translateX(-50%); }
+`;
 
 export const Main = styled('div')`
     display: flex;
@@ -11,6 +26,7 @@ export const Main = styled('div')`
     padding-top: 56px;
     padding-bottom: 44px;
 
+    /* ── 히어로 ───────────────────── */
     .hero {
         position: relative;
         display: flex;
@@ -21,10 +37,11 @@ export const Main = styled('div')`
         overflow: hidden;
 
         @media (max-width: 768px) {
-            padding: 0 28px;
+            flex-direction: column;
+            align-items: flex-start;
+            padding: 40px 24px 48px;
             min-height: auto;
-            padding-top: 60px;
-            padding-bottom: 60px;
+            gap: 0;
         }
     }
 
@@ -33,41 +50,124 @@ export const Main = styled('div')`
         inset: 0;
         background: radial-gradient(ellipse at 65% 50%, rgba(229,9,20,0.07) 0%, transparent 65%);
         pointer-events: none;
+
+        @media (max-width: 768px) {
+            background: radial-gradient(ellipse at 50% 30%, rgba(229,9,20,0.06) 0%, transparent 70%);
+        }
     }
 
-    .hero_grid {
+    /* ── 데스크탑 포스터 그리드 ────── */
+    .hero_poster_grid {
         position: absolute;
         right: 0;
         top: 0;
         bottom: 0;
         width: 52%;
-        display: grid;
-        grid-template-columns: repeat(5, 1fr);
-        grid-template-rows: repeat(6, 1fr);
-        gap: 4px;
-        opacity: 0.15;
+        display: flex;
+        gap: 12px;
+        padding: 0 16px;
         pointer-events: none;
-        mask-image: linear-gradient(to left, rgba(0,0,0,0.6) 0%, transparent 100%);
+        mask-image: linear-gradient(
+            to left,
+            black 0%,
+            black 40%,
+            transparent 100%
+        );
+        overflow: hidden;
+
+        @media (max-width: 1024px) {
+            width: 44%;
+        }
 
         @media (max-width: 768px) {
             display: none;
         }
     }
 
-    .hero_grid_item {
-        border-radius: 4px;
-        background: #1c1c1c;
+    .poster_col {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+        flex-shrink: 0;
     }
 
-    .hero_grid_item:nth-child(3n) { background: #242424; }
-    .hero_grid_item:nth-child(5n) { background: #181818; }
+    .poster_col_up {
+        animation: ${scrollUp} 35s linear infinite;
+    }
 
+    .poster_col_down {
+        animation: ${scrollDown} 45s linear infinite;
+    }
+
+    .poster_col_up2 {
+        animation: ${scrollUp} 55s linear infinite;
+
+        @media (max-width: 1024px) {
+            display: none;
+        }
+    }
+
+    .poster_card {
+        width: 140px;
+        aspect-ratio: 2/3;
+        border-radius: 8px;
+        background: #1c1c1c;
+        background-size: cover;
+        background-position: center;
+        flex-shrink: 0;
+
+        @media (max-width: 1024px) {
+            width: 120px;
+        }
+    }
+
+    /* ── 모바일 포스터 배너 ─────────── */
+    .hero_poster_mobile {
+        display: none;
+        width: calc(100% + 48px);
+        margin: 0 -24px 32px;
+        overflow: hidden;
+        mask-image: linear-gradient(
+            to right,
+            transparent 0%,
+            black 10%,
+            black 90%,
+            transparent 100%
+        );
+
+        @media (max-width: 768px) {
+            display: block;
+        }
+    }
+
+    .poster_row {
+        display: flex;
+        gap: 10px;
+        width: max-content;
+        animation: ${scrollLeft} 30s linear infinite;
+    }
+
+    .poster_card_mobile {
+        width: 90px;
+        aspect-ratio: 2/3;
+        border-radius: 8px;
+        background: #1c1c1c;
+        background-size: cover;
+        background-position: center;
+        flex-shrink: 0;
+    }
+
+    /* ── 히어로 콘텐츠 ─────────────── */
     .hero_content {
         position: relative;
         z-index: 2;
         max-width: 560px;
         display: flex;
         flex-direction: column;
+
+        @media (max-width: 768px) {
+            max-width: 100%;
+        }
     }
 
     .hero_badge {
@@ -102,6 +202,11 @@ export const Main = styled('div')`
         color: #fff;
 
         span { color: #E50914; }
+
+        @media (max-width: 768px) {
+            font-size: 3.6rem;
+            letter-spacing: -1.5px;
+        }
     }
 
     .hero_sub {
@@ -110,6 +215,11 @@ export const Main = styled('div')`
         line-height: 1.75;
         margin-bottom: 40px;
         max-width: 440px;
+
+        @media (max-width: 768px) {
+            font-size: 1.45rem;
+            max-width: 100%;
+        }
     }
 
     .hero_cta {
@@ -135,9 +245,14 @@ export const Main = styled('div')`
             background: #c1070f;
             transform: translateY(-1px);
         }
-
         &:active {
             transform: translateY(0);
+        }
+
+        @media (max-width: 768px) {
+            width: 100%;
+            text-align: center;
+            padding: 18px;
         }
     }
 
@@ -148,8 +263,14 @@ export const Main = styled('div')`
         padding-top: 36px;
         border-top: 1px solid rgba(255,255,255,0.07);
 
+        @media (max-width: 768px) {
+            gap: 24px;
+            margin-top: 36px;
+            padding-top: 28px;
+        }
+
         @media (max-width: 480px) {
-            gap: 20px;
+            gap: 16px;
         }
     }
 
@@ -164,6 +285,10 @@ export const Main = styled('div')`
         font-weight: 900;
         color: #fff;
         letter-spacing: -1px;
+
+        @media (max-width: 768px) {
+            font-size: 2rem;
+        }
     }
 
     .stat_label {

@@ -1,29 +1,31 @@
-import styled, { keyframes, css } from 'styled-components';
+import styled, { keyframes } from 'styled-components';
 
-const defaultImageUrl:string|undefined = process.env.NEXT_PUBLIC_DEFAULT_IMAGE_URL;
-const movieImageUrl:string|undefined = process.env.NEXT_PUBLIC_MOVIE_IMAGE_URL;
+const movieImageUrl: string | undefined = process.env.NEXT_PUBLIC_MOVIE_IMAGE_URL;
+const defaultImageUrl: string | undefined = process.env.NEXT_PUBLIC_DEFAULT_IMAGE_URL;
 
 const fadeInUp = keyframes`
-  0% {
-    opacity: 0;
-    transform: translateY(20px);
-  }
-  100% {
-    opacity: 1;
-    transform: translateY(0);
-  }
+    from { opacity: 0; transform: translateY(24px); }
+    to   { opacity: 1; transform: translateY(0); }
 `;
 
 export const Movie = styled('div')`
     position: relative;
     display: flex;
-    justify-content: center;
+    flex-direction: column;
+    align-items: center;
     width: 100%;
-    height: 100%;
-    padding: 80px 25px;
+    min-height: calc(100vh - 56px - 44px);
+    padding: 48px 40px 80px;
+    background: #0A0A0A;
+
+    @media (max-width: 768px) {
+        padding: 32px 16px 60px;
+    }
 
     .movie_header {
-
+        width: 100%;
+        max-width: 1200px;
+        margin-bottom: 36px;
     }
 
     .movie_body {
@@ -31,259 +33,187 @@ export const Movie = styled('div')`
         flex-direction: column;
         align-items: center;
         width: 100%;
-        height: 100%;
+        max-width: 1200px;
 
         .list_section {
-            display: flex;
-            flex-wrap: wrap;
-            justify-content: flex-start;
-            align-items: center;
-            gap: 15px;
-            width: 80%;
-            height: auto;
-        }
-        .button_section {
-        }
-    }
-`
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 16px;
+            width: 100%;
 
-export const MovieCard = styled('div')<{$image:string; $idx:number}>`
+            @media (max-width: 1200px) { grid-template-columns: repeat(4, 1fr); }
+            @media (max-width: 900px)  { grid-template-columns: repeat(3, 1fr); }
+            @media (max-width: 600px)  { grid-template-columns: repeat(2, 1fr); }
+        }
+
+        .button_section {
+            margin-top: 40px;
+        }
+    }
+`;
+
+export const MovieCard = styled('div')<{ $image: string; $idx: number }>`
     position: relative;
-    @media (max-width: 1440px) {
-        width: calc(90% / 4);
-    }
-    @media (max-width: 768px) {
-        width: 100%;
-        aspect-ratio: 4 / 2;
-    }
-    width: calc(90% / 5);
-    aspect-ratio: 3 / 5;
+    aspect-ratio: 2 / 3;
     border-radius: 10px;
-    background-color: rgb(43 43 48 / 1);
-    animation: ${fadeInUp} 0.5s ease-out forwards;
-    animation-delay: ${({$idx}) => $idx * 0.1}s;
-    opacity: 0;
+    background: #141414;
+    overflow: hidden;
     cursor: pointer;
+    animation: ${fadeInUp} 0.5s ease both;
+    animation-delay: ${({ $idx }) => Math.min($idx * 0.07, 0.7)}s;
+    opacity: 0;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+
+    &:hover {
+        transform: translateY(-8px) scale(1.02);
+        box-shadow: 0 24px 48px rgba(0,0,0,0.7), 0 0 0 1px rgba(255,255,255,0.08);
+        z-index: 5;
+    }
 
     .card_container {
-        @media (max-width: 768px) {
-            flex-direction: row;
-        }
         position: relative;
-        display: flex;
-        flex-direction: column;
-        height: 100%;
         width: 100%;
+        height: 100%;
 
-        &:hover > .card_head > .card_image {
-            transition: transform .4s ease-in-out;
-            transform: translate(0, 0) rotate(0) skewX(0) skewY(0) scaleX(1.1) scaleY(1.1);
-        }
-
-        &:not(:hover) > .card_head > .card_image {
-            transition: transform .4s ease-in-out;
-        }
-
+        /* 포스터 이미지 */
         .card_head {
-            @media (max-width: 768px) {
-                width: 50%;
-                height: 100%;
-            }
-            position: relative;
-            width: 100%;
-            height: 95%;
-            border-radius: 10px;
+            position: absolute;
+            inset: 0;
             overflow: hidden;
 
             .card_image {
-                position: absolute;
-                top: 0;
-                left: 0;
                 width: 100%;
-                height: 99%;
-                background-image: ${({$image}) => "url('" + movieImageUrl + "/w500" + $image + "')"};
-                background-size: 100%;
-                background-repeat: no-repeat;
+                height: 100%;
+                background-image: ${({ $image }) => `url('${movieImageUrl}/w500${$image}')`};
+                background-size: cover;
+                background-position: center;
+                transition: transform 0.5s ease;
             }
 
             .card_effect {
-                @media (max-width: 768px) {
-                    background-image: linear-gradient(rgba(43, 43, 48, 0) 40%, rgb(43, 43, 48) 95%);
-                }
                 position: absolute;
-                top: 0;
-                left: 0;
-                width: 100%;
-                height: 100%;
-                background-image: linear-gradient(rgba(43, 43, 48, 0) 30%, rgb(43, 43, 48) 90%);
+                inset: 0;
+                background: linear-gradient(
+                    to bottom,
+                    transparent 30%,
+                    rgba(10,10,10,0.5) 65%,
+                    rgba(10,10,10,0.97) 100%
+                );
             }
         }
 
+        &:hover .card_image {
+            transform: scale(1.08);
+        }
+
+        /* 카드 정보 */
         .card_body {
-            @media (max-width: 768px) {
-                position: relative;
-                justify-content: flex-start;
-                padding: 5px;
-            }
             position: absolute;
             bottom: 0;
-            display: flex; 
-            flex-direction: column; 
-            justify-content: space-between;
-            width: 100%;
-            height: 97%;
+            left: 0;
+            right: 0;
+            padding: 12px 10px;
+            z-index: 2;
 
             .card_ott {
-                @media (max-width: 1024px) {
-                    margin-top: 3px;
-                }
-                @media (max-width: 768px) {
-                    position: absolute;
-                    bottom: 8px;
-                    left: 13px;
-                }
                 display: flex;
                 align-items: center;
-                z-index: 99;
+                gap: 3px;
+                margin-bottom: 6px;
             }
 
             .card_content {
-                @media (max-width: 768px) {
-                    align-items: flex-start;
-                }
-                position: relative;
-                bottom: 0;
                 display: flex;
                 flex-direction: column;
-                align-items: center;
-                color: #FFFFFF;
+                gap: 4px;
+
+                .card_genres {
+                    display: flex;
+                    flex-wrap: wrap;
+                    gap: 4px;
+
+                    .card_genre {
+                        padding: 2px 7px;
+                        border: 1px solid rgba(255,255,255,0.12);
+                        border-radius: 4px;
+                        background: rgba(0,0,0,0.5);
+                        backdrop-filter: blur(4px);
+                        font-size: 0.95rem;
+                        color: rgba(255,255,255,0.65);
+
+                        @media (max-width: 900px) { font-size: 0.85rem; }
+                    }
+                }
 
                 .card_title {
-                    @media (max-width: 1024px) {
-                        font-size: 1.2rem;
-                    }
-                    @media (max-width: 768px) {
-                        font-size: 1.8rem;
-                    }
-                    // mobile_view
-                    @media (max-width: 500px) {
-                        font-size: 1.3rem;
-                    }
-                    padding: 0 10px;
-                    font-size: 1.5rem;
+                    font-size: 1.3rem;
                     font-weight: 700;
+                    color: #fff;
+                    white-space: nowrap;
+                    overflow: hidden;
+                    text-overflow: ellipsis;
+                    line-height: 1.3;
+
+                    @media (max-width: 900px) { font-size: 1.1rem; }
                 }
 
                 .card_year {
-                    @media (max-width: 1024px) {
-                        font-size: 1rem;
-                    }
-                    @media (max-width: 768px) {
-                        font-size: 1.2rem;
-                    }
-                    // mobile_view
-                    @media (max-width: 500px) {
-                        font-size: 1rem;
-                    }
-                    padding: 5px 10px;
-                    font-size: 1.2rem;
-                }
+                    font-size: 1.1rem;
+                    color: rgba(255,255,255,0.35);
 
-                .card_genres {
-                    // mobile_view
-                    @media (max-width: 500px) {
-                        justify-content: left;
-                        width: 85%;
-                    }
-                    display: flex;
-                    flex-wrap: wrap;
-                    justify-content: center;
-                    align-items: center;
-                    gap: 1px;
-                    padding: 5px 7px;
-
-                    .card_genre {
-                        @media (max-width: 1024px) {
-                            font-size: .8rem;
-                        }
-                        @media (max-width: 768px) {
-                            font-size: 1rem;
-                        }
-                        // mobile_view
-                        @media (max-width: 500px) {
-                            font-size: .8rem;
-                        }
-                        padding: 2px 7px;
-                        border: 1px solid rgba(255, 255, 255, 0.1);
-                        border-radius: 7px;
-                        background-color: rgba(0, 0, 0, 0.4);
-                        backdrop-filter: blur(4px);
-                        font-size: 1rem;
-                        line-height: 1.7;
-                    }
+                    @media (max-width: 900px) { font-size: 0.95rem; }
                 }
             }
         }
     }
-`
+`;
 
-export const PlatformBadge = styled('div')<{$image:string}>`
-    @media (max-width: 1024px) {
-        width: 20px;
-        height: 20px;
-    }
-    @media (max-width: 768px) {
-        width: 30px;
-        height: 30px;
-        margin-left: 5px;
-        border-radius: 10px;
-    }
-    // mobile_view
-    @media (max-width: 500px) {
-        width: 22px;
-        height: 22px;
-        border-radius: 5px;
-    }
+export const PlatformBadge = styled('div')<{ $image: string }>`
     position: relative;
     display: inline-block;
-    width: 25px;
-    height: 25px;
-    margin-left: 3px;
-    border: none;
+    width: 22px;
+    height: 22px;
     border-radius: 50%;
-    background-image: ${({$image}) => "url('" + defaultImageUrl + "/platform/" + $image + ($image === 'COUPANG' ? ".webp')" : $image === 'WAVVE' ? ".png')" : ".svg')") };
+    border: none;
+    background-image: ${({ $image }) =>
+        `url('${defaultImageUrl}/platform/${$image}${
+            $image === 'COUPANG' ? '.webp' : $image === 'WAVVE' ? '.png' : '.svg'
+        }')`};
     background-repeat: no-repeat;
-    background-size: ${({$image}) => $image === 'AMAZON' || $image === 'DISNEY' ? 85 : $image === 'COUPANG' ? 150 : 100}%;
+    background-size: ${({ $image }) =>
+        $image === 'AMAZON' || $image === 'DISNEY' ? 85 :
+        $image === 'COUPANG' ? 150 : 100}%;
     background-position: center;
-    background-color: ${({$image}) => $image === 'NETFLIX' || $image === 'WATCHA' ? '#000000' : '#FFFFFF' };
+    background-color: ${({ $image }) =>
+        $image === 'NETFLIX' || $image === 'WATCHA' ? '#000' : '#fff'};
+
+    @media (max-width: 900px) { width: 18px; height: 18px; }
 
     &::after {
-        content: ${({$image}) => $image === 'NETFLIX' ? "'넷플릭스'" :
-                                 $image === 'WATCHA' ? "'왓챠'" :
-                                 $image === 'AMAZON' ? "'아마존 프라임'" : 
-                                 $image === 'DISNEY' ? "'디즈니+'" :
-                                 $image === 'WAVVE' ? "'웨이브'" :
-                                 $image === 'TVING' ? "'티빙'" :
-                                 $image === 'COUPANG' ? "'쿠팡플레이'" : "''" };
+        content: ${({ $image }) =>
+            $image === 'NETFLIX'  ? "'넷플릭스'" :
+            $image === 'WATCHA'   ? "'왓챠'" :
+            $image === 'AMAZON'   ? "'아마존 프라임'" :
+            $image === 'DISNEY'   ? "'디즈니+'" :
+            $image === 'WAVVE'    ? "'웨이브'" :
+            $image === 'TVING'    ? "'티빙'" :
+            $image === 'COUPANG'  ? "'쿠팡플레이'" : "''"};
         position: absolute;
         bottom: 120%;
         left: 50%;
         transform: translateX(-50%) translateY(5px);
-        background: rgba(43, 43, 48, 0.9);
-        backdrop-filter: blur(8px);
-        -webkit-backdrop-filter: blur(8px);
-        color: #ffffff;
-        padding: 3px 6px;
-        border-radius: 8px;
-        border: 1px solid rgba(255, 255, 255, 0.1);
-        font-size: .9rem;
-        font-weight: 500;
+        background: rgba(20,20,20,0.95);
+        color: #fff;
+        padding: 3px 8px;
+        border-radius: 6px;
+        border: 1px solid rgba(255,255,255,0.1);
+        font-size: 0.9rem;
         white-space: nowrap;
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
         opacity: 0;
         visibility: hidden;
-        transition: all 0.2s ease-in-out;
+        transition: all 0.2s ease;
         z-index: 100;
+        pointer-events: none;
     }
 
     &:hover::after {
@@ -291,10 +221,4 @@ export const PlatformBadge = styled('div')<{$image:string}>`
         visibility: visible;
         transform: translateX(-50%) translateY(0);
     }
-
-    @media (max-width: 768px) {
-        &::after {
-            font-size: 0.9rem;
-        }
-    }
-`
+`;

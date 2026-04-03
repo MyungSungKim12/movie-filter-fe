@@ -344,15 +344,6 @@ const Footer = () => {
                         >
                             BE Repository
                         </FooterLink>
-                        <LinkDot>·</LinkDot>
-                        <FooterLink
-                            as="a"
-                            href="https://github.com/rlawo32/movie-filter-be"
-                            target="_blank"
-                            rel="noopener noreferrer"
-                        >
-                            BE Repository
-                        </FooterLink>
                     </CenterSection>
 
                     <RightSection>
