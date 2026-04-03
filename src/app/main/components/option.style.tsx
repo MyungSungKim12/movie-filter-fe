@@ -260,3 +260,51 @@ export const NavBtn = styled('button')<{$primary?: boolean}>`
         }
     `}
 `
+
+export const PlatformGrid = styled('div')`
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+    margin-bottom: 28px;
+`
+
+export const PlatformItem = styled('div')<{$select: boolean; $isAll: boolean}>`
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 14px 16px;
+    border-radius: 10px;
+    border: 1px solid ${({$select}) => $select ? '#E50914' : 'rgba(255,255,255,0.08)'};
+    background: ${({$select}) => $select ? 'rgba(229,9,20,0.1)' : 'rgba(255,255,255,0.03)'};
+    cursor: pointer;
+    opacity: 0;
+    animation: ${fadeInUp} 0.35s ease forwards;
+    transition: border-color 0.2s ease, background 0.2s ease, transform 0.15s ease;
+
+    ${({$isAll}) => $isAll && `
+        grid-column: 1 / -1;
+        justify-content: center;
+    `}
+
+    &:hover {
+        border-color: ${({$select}) => $select ? '#E50914' : 'rgba(255,255,255,0.2)'};
+        background: ${({$select}) => $select ? 'rgba(229,9,20,0.15)' : 'rgba(255,255,255,0.06)'};
+        transform: translateY(-2px);
+    }
+
+    .platform_logo {
+        width: 28px;
+        height: 28px;
+        border-radius: 6px;
+        background-size: cover;
+        background-position: center;
+        flex-shrink: 0;
+    }
+
+    .platform_name {
+        font-size: 1.35rem;
+        font-weight: ${({$select}) => $select ? '600' : '400'};
+        color: ${({$select}) => $select ? '#ff6b6b' : 'rgba(255,255,255,0.7)'};
+        transition: color 0.2s ease;
+    }
+`
