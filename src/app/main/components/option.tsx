@@ -49,30 +49,17 @@ const MOTION_ICONS: Record<string, any> = {
     option_13: motion_tired,
 };
 
-const DEFAULT_IMAGE_URL = process.env.NEXT_PUBLIC_DEFAULT_IMAGE_URL;
-
-const PLATFORMS = [
-    { id: 'NETFLIX', name: '넷플릭스', logo: `${DEFAULT_IMAGE_URL}/platform/NETFLIX.svg`, bgColor: '#000' },
-    { id: 'TVING',   name: '티빙',    logo: `${DEFAULT_IMAGE_URL}/platform/TVING.svg`,   bgColor: '#fff' },
-    { id: 'WATCHA',  name: '왓챠',    logo: `${DEFAULT_IMAGE_URL}/platform/WATCHA.svg`,  bgColor: '#000' },
-    { id: 'WAVVE',   name: '웨이브',  logo: `${DEFAULT_IMAGE_URL}/platform/WAVVE.png`,   bgColor: '#fff' },
-    { id: 'AMAZON',  name: '아마존',  logo: `${DEFAULT_IMAGE_URL}/platform/AMAZON.svg`,  bgColor: '#fff' },
-    { id: 'DISNEY',  name: '디즈니+', logo: `${DEFAULT_IMAGE_URL}/platform/DISNEY.svg`,  bgColor: '#fff' },
-    { id: 'ALL',     name: '상관없음', logo: '',                                            bgColor: 'transparent' },
-];
-
-const STEP_TITLES = ['', '누구와 함께 보나요?', '지금 기분이 어때요?', '어떤 장르가 좋아요?', '어떤 플랫폼을 이용 중이에요?'];
-const STEP_SUBS   = ['', '인원을 선택하세요', '현재 감정을 선택하세요 (최대 2개)', '장르를 선택하세요 (최대 3개)', '구독 중인 OTT를 선택하세요'];
-
 const Option = () => {
     const supabase = useSupabaseBrowser();
 
-    const { process, setProcess, optionArr, setOptionArr, removeOptionArr, selectPersonnel,
-            optionClean, isLoading, setIsLoading, platform, setPlatform } = useMainProcessStore();
+    const { process, setProcess, optionArr, setOptionArr, removeOptionArr, selectPersonnel, optionClean, isLoading, setIsLoading } = useMainProcessStore();
     const { setMovieLogId } = useMovieListStore();
 
     const { data: optionAll } = useQuery(getOptionAllQuery(supabase), { staleTime: Infinity, gcTime: 1000 * 60 * 60 });
     const [optionData, setOptionData] = useState<any[]>([]);
+
+    const STEP_TITLES = ['', '누구와 함께 보나요?', '지금 기분이 어때요?', '어떤 장르가 좋아요?'];
+    const STEP_SUBS   = ['', '인원을 선택하세요', '현재 감정을 선택하세요 (최대 2개)', '장르를 선택하세요 (최대 3개)'];
 
     const recommendMovieActive = () => {
         if (isLoading) return;
@@ -80,11 +67,7 @@ const Option = () => {
         axios({
             method: "POST",
             url: "/local/api/movie/recommend",
-            data: {
-                userId: localStorage.getItem('user_id'),
-                option: optionArr,
-                platform: platform, // 플랫폼 추가
-            },
+            data: { userId: localStorage.getItem('user_id'), option: optionArr },
             headers: {
                 'Content-type': 'application/json',
                 Authorization: `Bearer ${localStorage.getItem('accessToken')}`,
@@ -123,9 +106,6 @@ const Option = () => {
         } else if (process === 2) {
             if (!optionArr.some(item => item.type === 'M')) alert('최소 1개 선택해주세요.');
             else setProcess(process + 1);
-        } else if (process === 3) {
-            if (!optionArr.some(item => item.type === 'G')) alert('최소 1개 선택해주세요.');
-            else setProcess(process + 1);
         }
     }
 
@@ -149,7 +129,7 @@ const Option = () => {
 
                 {/* 진행 바 */}
                 <div className="option_progress">
-                    {[1, 2, 3, 4].map((step) => (
+                    {[1, 2, 3].map((step) => (
                         <Style.ProgressStep
                             key={step}
                             $active={process === step}
@@ -161,7 +141,7 @@ const Option = () => {
                 <div className="option_step_title">{STEP_TITLES[process]}</div>
                 <div className="option_step_sub">{STEP_SUBS[process]}</div>
 
-                {/* 1단계: 인원 2×2 */}
+                {/* 인원 선택 - 2×2 그리드 */}
                 {process === 1 && (
                     <div className="option_view_personnel">
                         {optionData.map((item: any, idx) => (
@@ -180,7 +160,7 @@ const Option = () => {
                     </div>
                 )}
 
-                {/* 2단계: 감정 3×3 */}
+                {/* 감정 선택 - 3×3 그리드 */}
                 {process === 2 && (
                     <div className="option_view_grid">
                         {optionData.map((item: any, idx) => (
@@ -199,7 +179,7 @@ const Option = () => {
                     </div>
                 )}
 
-                {/* 3단계: 장르 3×3 텍스트 */}
+                {/* 장르 선택 - 3×3 그리드, 텍스트만 */}
                 {process === 3 && (
                     <div className="option_view_grid">
                         {optionData.map((item: any, idx) => (
@@ -215,40 +195,12 @@ const Option = () => {
                     </div>
                 )}
 
-                {/* 4단계: 플랫폼 */}
-                {process === 4 && (
-                    <Style.PlatformGrid>
-                        {PLATFORMS.map((p, idx) => (
-                            <Style.PlatformItem
-                                key={p.id}
-                                $select={platform === p.id}
-                                $isAll={p.id === 'ALL'}
-                                onClick={() => setPlatform(p.id)}
-                                style={{ animationDelay: `${idx * 0.05}s` }}
-                            >
-                                {p.id !== 'ALL' && (
-                                    <div
-                                        className="platform_logo"
-                                        style={{
-                                            backgroundImage: `url(${p.logo})`,
-                                            backgroundColor: p.bgColor,
-                                            backgroundSize: p.id === 'AMAZON' || p.id === 'DISNEY' ? '85%' : '100%',
-                                            backgroundRepeat: 'no-repeat',
-                                        }}
-                                    />
-                                )}
-                                <div className="platform_name">{p.name}</div>
-                            </Style.PlatformItem>
-                        ))}
-                    </Style.PlatformGrid>
-                )}
-
                 {/* 하단 버튼 */}
                 <div className="option_next">
                     {process > 1 && (
                         <Style.NavBtn onClick={() => setProcess(process - 1)}>뒤로</Style.NavBtn>
                     )}
-                    {process === 4 ? (
+                    {process > 2 ? (
                         <Style.NavBtn $primary onClick={recommendMovieActive}>완료</Style.NavBtn>
                     ) : (
                         <Style.NavBtn $primary onClick={selectNextOption}>다음</Style.NavBtn>
