@@ -305,7 +305,6 @@ const Footer = () => {
     const currentYear = new Date().getFullYear();
 
     const TEAM_MEMBERS = [
-        { name: "rlawo32", url: "https://github.com/rlawo32" },
         { name: "MyungSungKim12", url: "https://github.com/MyungSungKim12" },
     ];
 
@@ -330,11 +329,20 @@ const Footer = () => {
                         <LinkDot>·</LinkDot>
                         <FooterLink
                             as="a"
-                            href="https://github.com/rlawo32/movie-filter-fe"
+                            href="https://github.com/MyungSungKim12/movie-filter-fe"
                             target="_blank"
                             rel="noopener noreferrer"
                         >
                             FE Repository
+                        </FooterLink>
+                        <LinkDot>·</LinkDot>
+                        <FooterLink
+                            as="a"
+                            href="https://github.com/MyungSungKim12/movie-filter-be"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                        >
+                            BE Repository
                         </FooterLink>
                         <LinkDot>·</LinkDot>
                         <FooterLink

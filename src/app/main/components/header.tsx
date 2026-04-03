@@ -108,18 +108,13 @@ const Header = () => {
             formData.append('files', file);
             formData.append('userId', userId);
 
-            //const res = await api.post('/local/api/user/uploadImage', formData);
             const res = await axios.post('/local/api/user/uploadImage', formData, {
-                headers: {
-                    Authorization: `Bearer ${localStorage.getItem('accessToken')}`,
-                },
+                headers: { Authorization: `Bearer ${localStorage.getItem('accessToken')}` },
                 withCredentials: true,
             });
 
             const newUrl = res.data?.profileImageUrl;
-            if (newUrl && newUrl.length > 0) {
-                setProfileUrl(newUrl);
-            }
+            if (newUrl && newUrl.length > 0) setProfileUrl(newUrl);
         } catch (err) {
             console.error('프로필 이미지 업로드 실패:', err);
             setUploadError('업로드에 실패했습니다. 다시 시도해주세요.');
@@ -148,18 +143,8 @@ const Header = () => {
 
     return (
         <HeaderStyle>
-            <LogoArea onClick={() => moveHome()}>
-                <svg width="26" height="30" viewBox="0 0 28 36" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <rect width="28" height="36" rx="3" fill="#E50914"/>
-                    <rect x="3" y="3" width="5" height="5" rx="1" fill="#0a0a0a"/>
-                    <rect x="11" y="3" width="5" height="5" rx="1" fill="#0a0a0a"/>
-                    <rect x="20" y="3" width="5" height="5" rx="1" fill="#0a0a0a"/>
-                    <rect x="3" y="28" width="5" height="5" rx="1" fill="#0a0a0a"/>
-                    <rect x="11" y="28" width="5" height="5" rx="1" fill="#0a0a0a"/>
-                    <rect x="20" y="28" width="5" height="5" rx="1" fill="#0a0a0a"/>
-                    <rect x="3" y="11" width="22" height="14" rx="1.5" fill="rgba(0,0,0,0.35)"/>
-                    <polygon points="9,14 9,22 20,18" fill="white"/>
-                </svg>
+            <LogoArea onClick={moveHome}>
+                <LogoIcon>MF</LogoIcon>
                 <LogoText>Movie<span>Filter</span></LogoText>
             </LogoArea>
 
@@ -167,7 +152,6 @@ const Header = () => {
                 {isLoggedIn ? (
                     <ProfileArea ref={dropdownRef}>
                         <EmailLabel>{userName ?? userEmail}님</EmailLabel>
-
                         <ProfileBtn
                             onClick={() => setDropdownOpen(prev => !prev)}
                             aria-label="프로필 메뉴"
@@ -179,7 +163,7 @@ const Header = () => {
                                 <ProfileImg src={profileUrl} alt="프로필" />
                             ) : (
                                 <DefaultAvatar>
-                                    <svg viewBox="0 0 24 24" fill="currentColor" width="20" height="20">
+                                    <svg viewBox="0 0 24 24" fill="currentColor" width="18" height="18">
                                         <path d="M12 12c2.7 0 4.8-2.1 4.8-4.8S14.7 2.4 12 2.4 7.2 4.5 7.2 7.2 9.3 12 12 12zm0 2.4c-3.2 0-9.6 1.6-9.6 4.8v2.4h19.2v-2.4c0-3.2-6.4-4.8-9.6-4.8z"/>
                                     </svg>
                                 </DefaultAvatar>
@@ -188,15 +172,10 @@ const Header = () => {
 
                         {dropdownOpen && (
                             <DropdownMenu>
-                                <DropdownItem onClick={() => {
-                                    setDropdownOpen(false);
-                                    router.push('/mypage');
-                                }}>
+                                <DropdownItem onClick={() => { setDropdownOpen(false); router.push('/mypage'); }}>
                                     마이페이지
                                 </DropdownItem>
-
                                 <DropdownDivider />
-
                                 <input
                                     ref={fileInputRef}
                                     type="file"
@@ -207,11 +186,8 @@ const Header = () => {
                                 <DropdownItem onClick={() => fileInputRef.current?.click()}>
                                     프로필 이미지 변경
                                 </DropdownItem>
-
                                 {uploadError && <ErrorMsg>{uploadError}</ErrorMsg>}
-
                                 <DropdownDivider />
-
                                 <DropdownItem $danger onClick={handleLogout}>
                                     로그아웃
                                 </DropdownItem>
@@ -239,71 +215,116 @@ const HeaderStyle = styled.div`
     align-items: center;
     justify-content: space-between;
     width: 100%;
-    height: 50px;
-    padding: 0 50px;
-    background-color: #0F0F0F;
+    height: 56px;
+    padding: 0 40px;
+    background: #111111;
+    border-bottom: 1px solid rgba(255,255,255,0.06);
     color: white;
     z-index: 500;
     @media (max-width: 768px) { padding: 0 20px; }
 `;
-const LogoArea = styled.div`cursor: pointer; display: flex; align-items: center; gap: 8px;`;
+
+const LogoArea = styled.div`
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    user-select: none;
+`;
+
+const LogoIcon = styled.div`
+    width: 32px;
+    height: 32px;
+    background: #E50914;
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.2rem;
+    font-weight: 900;
+    color: #fff;
+    letter-spacing: -1px;
+`;
+
 const LogoText = styled.span`
-    font-size: 17px; font-weight: 800; letter-spacing: -0.3px; color: white;
+    font-size: 1.7rem;
+    font-weight: 800;
+    letter-spacing: -0.5px;
+    color: white;
     span { color: #E50914; }
 `;
+
 const UserSection = styled.div`display: flex; align-items: center; gap: 12px;`;
-const EmailLabel = styled.span`font-size: 13px; color: #aaa; @media (max-width: 600px) { display: none; }`;
+const EmailLabel = styled.span`font-size: 1.3rem; color: rgba(255,255,255,0.5); @media (max-width: 600px) { display: none; }`;
 const ProfileArea = styled.div`position: relative; display: flex; align-items: center; gap: 12px;`;
+
 const ProfileBtn = styled.button<{ $uploading: boolean }>`
     width: 34px; height: 34px; border-radius: 50%;
-    border: 2px solid ${p => p.$uploading ? '#444' : 'rgba(255,255,255,0.25)'};
+    border: 2px solid ${p => p.$uploading ? '#333' : 'rgba(255,255,255,0.15)'};
     background: #1a1a1a;
     cursor: ${p => p.$uploading ? 'default' : 'pointer'};
     overflow: hidden; padding: 0;
     display: flex; align-items: center; justify-content: center;
-    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+    transition: border-color 0.2s ease;
     &:hover {
-        border-color: ${p => p.$uploading ? '#444' : '#ffffff'};
-        box-shadow: ${p => p.$uploading ? 'none' : '0 0 0 3px rgba(255,255,255,0.1)'};
+        border-color: ${p => p.$uploading ? '#333' : 'rgba(255,255,255,0.4)'};
     }
 `;
+
 const ProfileImg = styled.img`width: 100%; height: 100%; object-fit: cover; border-radius: 50%;`;
-const DefaultAvatar = styled.div`width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; color: #777; background: #2a2a2a;`;
+const DefaultAvatar = styled.div`width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; color: #555; background: #222;`;
 const UploadSpinner = styled.div`
-    width: 15px; height: 15px;
-    border: 2px solid rgba(255,255,255,0.15);
-    border-top-color: #ffffff;
+    width: 14px; height: 14px;
+    border: 2px solid rgba(255,255,255,0.1);
+    border-top-color: #fff;
     border-radius: 50%;
     animation: ${spin} 0.8s linear infinite;
 `;
+
 const DropdownMenu = styled.div`
     position: absolute; top: calc(100% + 10px); right: 0;
     min-width: 160px; background: #1c1c1c;
-    border: 1px solid rgba(255,255,255,0.1);
-    border-radius: 10px; box-shadow: 0 8px 24px rgba(0,0,0,0.5);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 10px;
+    box-shadow: 0 12px 40px rgba(0,0,0,0.6);
     overflow: hidden; z-index: 1000;
     &::before {
         content: ''; position: absolute; top: -5px; right: 11px;
         width: 9px; height: 9px; background: #1c1c1c;
-        border-left: 1px solid rgba(255,255,255,0.1);
-        border-top: 1px solid rgba(255,255,255,0.1);
+        border-left: 1px solid rgba(255,255,255,0.08);
+        border-top: 1px solid rgba(255,255,255,0.08);
         transform: rotate(45deg);
     }
 `;
+
 const DropdownItem = styled.button<{ $danger?: boolean }>`
     display: block; width: 100%; padding: 11px 16px;
     text-align: left; background: none; border: none;
     color: ${p => p.$danger ? '#ff5555' : '#e5e7eb'};
-    font-size: 13px; cursor: pointer; transition: background 0.15s ease;
-    &:hover { background: ${p => p.$danger ? 'rgba(255,85,85,0.1)' : 'rgba(255,255,255,0.07)'}; }
+    font-size: 1.3rem; cursor: pointer;
+    transition: background 0.15s ease;
+    &:hover { background: ${p => p.$danger ? 'rgba(255,85,85,0.1)' : 'rgba(255,255,255,0.06)'}; }
 `;
-const DropdownDivider = styled.div`height: 1px; background: rgba(255,255,255,0.07); margin: 2px 0;`;
-const ErrorMsg = styled.div`padding: 6px 16px; font-size: 11px; color: #ff6b6b; line-height: 1.4;`;
+
+const DropdownDivider = styled.div`height: 1px; background: rgba(255,255,255,0.06); margin: 2px 0;`;
+const ErrorMsg = styled.div`padding: 6px 16px; font-size: 1.1rem; color: #ff6b6b; line-height: 1.4;`;
+
 const NavButton = styled.button`
-    background: none; border: 1px solid white; color: white;
-    padding: 5px 15px; cursor: pointer; border-radius: 4px;
-    font-size: 13px; transition: all 0.2s ease;
-    &:hover { background-color: white; color: black; }
+    background: none;
+    border: 1px solid rgba(255,255,255,0.2);
+    color: rgba(255,255,255,0.7);
+    padding: 6px 18px;
+    cursor: pointer;
+    border-radius: 4px;
+    font-size: 1.3rem;
+    font-weight: 600;
+    letter-spacing: 0.05em;
+    transition: all 0.2s ease;
+    &:hover {
+        border-color: rgba(255,255,255,0.5);
+        color: #fff;
+        background: rgba(255,255,255,0.05);
+    }
 `;
 
 export default Header;
