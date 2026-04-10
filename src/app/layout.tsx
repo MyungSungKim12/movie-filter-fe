@@ -9,7 +9,7 @@ import StyledComponentsRegistry from "./StyledComponentsRegistry";
 import { config } from '@fortawesome/fontawesome-svg-core'
 import '@fortawesome/fontawesome-svg-core/styles.css'
 
-import { Analytics } from '@vercel/analytics/react';
+import { Analytics } from '@vercel/analytics/next';
 config.autoAddCss = false
 
 export const metadata: Metadata = {
@@ -29,6 +29,7 @@ export default function RootLayout({
           <StyledComponentsRegistry>
             {children}
           </StyledComponentsRegistry>
+          <Analytics />
         </body>
       </html>
     </ReactQueryClientProvider>
