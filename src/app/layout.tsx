@@ -8,6 +8,8 @@ import StyledComponentsRegistry from "./StyledComponentsRegistry";
 // fontawesome issue solution
 import { config } from '@fortawesome/fontawesome-svg-core'
 import '@fortawesome/fontawesome-svg-core/styles.css'
+
+import { Analytics } from '@vercel/analytics/react';
 config.autoAddCss = false
 
 export const metadata: Metadata = {
